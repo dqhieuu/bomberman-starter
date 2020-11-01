@@ -15,19 +15,22 @@ public abstract class Entity {
     protected int x;
     protected int y;
     protected Image img;
+    private final Image base;
 
     public Entity( int x, int y, Image img) {
         this.x = x;
         this.y = y;
         this.img = img;
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        ImageView iv = new ImageView(img);
+        base = iv.snapshot(params, null);
     }
 
     public void render(GraphicsContext gc) {
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
 
-        ImageView iv = new ImageView(img);
-        Image base = iv.snapshot(params, null);
+
+
 
         gc.drawImage(base, x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE);
     }
