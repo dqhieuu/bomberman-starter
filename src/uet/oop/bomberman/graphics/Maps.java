@@ -26,6 +26,11 @@ public class Maps {
         return MAP_HEIGHT;
     }
 
+    /**
+     * Generate a list of maps from the path file. Read the Note.txt in res/levels for details on how the path file is structured.
+     *
+     * @param path
+     */
     public void readFile(String path) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
@@ -94,6 +99,9 @@ public class Maps {
         }
     }
 
+    /**
+     * This is just for testing.
+     */
     public void printMap() {
         System.out.println(numberOfMaps);
         System.out.println(MAP_HEIGHT);

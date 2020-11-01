@@ -50,6 +50,9 @@ public class Bomb extends Entity {
         }
     }
 
+    /**
+     * Check the surrounding for walls in order to draw the required explosion sprite.
+     */
     public void checkSurrounding() {
         for (int i = -1; i >= -explodeLimit; i--) {
             if (Entity.getNextEntity(x + i, y) instanceof Wall) {
@@ -69,6 +72,9 @@ public class Bomb extends Entity {
         }
     }
 
+    /**
+     * Add all explosion sprite for later rendering.
+     */
     public void setExplodeAnimation() {
         Entity centerExplosion = new Explosion(x, y, Sprite.bomb_exploded.getFxImage());
         explodeAnimation.add(centerExplosion);

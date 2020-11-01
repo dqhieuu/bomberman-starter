@@ -48,12 +48,20 @@ public class Level {
         }
     }
 
+    /**
+     * This is just for testing also.
+     */
     public void testMap() {
         for (String texture : mapStrcuture) {
             System.out.println(texture);
         }
     }
 
+    /**
+     * Draw the level, recycled from the previous code.
+     *
+     * @param gc
+     */
     public void drawMap(GraphicsContext gc) {
         gc.clearRect(0, 0, BombermanGame.canvas.getWidth(), BombermanGame.canvas.getHeight());
         stillObjects.forEach(g -> g.render(gc));

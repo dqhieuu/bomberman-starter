@@ -48,6 +48,11 @@ public class BombermanGame extends Application {
         Scene scene = new Scene(root);
 
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            /**
+             * Don't invest much in the SPACE case, it's still in progress.
+             *
+             * @param keyEvent
+             */
             @Override
             public void handle(KeyEvent keyEvent) {
                 switch (keyEvent.getCode()) {

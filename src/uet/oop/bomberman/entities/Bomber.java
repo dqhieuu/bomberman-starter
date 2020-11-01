@@ -87,6 +87,9 @@ public class Bomber extends Entity {
         return explodeRange;
     }
 
+    /**
+     * Check if bomberman can move to the destined location.
+     */
     public void checkMovement() {
         int corX;
         int corY;
