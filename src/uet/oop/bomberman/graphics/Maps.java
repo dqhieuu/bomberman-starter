@@ -12,7 +12,7 @@ public class Maps {
     private int numberOfMaps;
     private int MAP_WIDTH;
     private int MAP_HEIGHT;
-    public static ArrayList<Level> maps = new ArrayList<>();
+    private ArrayList<Level> maps = new ArrayList<>();
 
     public Maps(String path) {
         readFile(path);
@@ -24,6 +24,10 @@ public class Maps {
 
     public int getMAP_HEIGHT() {
         return MAP_HEIGHT;
+    }
+
+    public ArrayList<Level> getMaps(){
+        return maps;
     }
 
     /**
@@ -82,7 +86,7 @@ public class Maps {
                 if (!mapCreated) {
                     level--;
                     counter = 0;
-                    mapCreated = true;
+                    mapCreated = true; //reset the requirement for the next level.
                 } else {
                     Level newLevel = new Level(level, mapStructure);
                     maps.add(newLevel);

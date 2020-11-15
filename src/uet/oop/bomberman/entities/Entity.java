@@ -5,22 +5,28 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.entities.StillObjects.Grass;
 import uet.oop.bomberman.graphics.Maps;
 import uet.oop.bomberman.graphics.Sprite;
 
-import java.awt.*;
+import javafx.scene.shape.Rectangle;
 
 public abstract class Entity {
-    protected int x;
-    protected int y;
+    protected double x;
+    protected double y;
     protected Image img;
-    private final Image base;
+    private Image base;
 
-    public Entity( int x, int y, Image img) {
+    public Entity(double x, double y, Image img) {
         this.x = x;
         this.y = y;
         this.img = img;
+        updateImg();
+    }
+
+    private void updateImg() {
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
         ImageView iv = new ImageView(img);
@@ -29,59 +35,40 @@ public abstract class Entity {
 
     public void render(GraphicsContext gc) {
 
-
-
-
         gc.drawImage(base, x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE);
     }
 
-    public int getX(){
+    public double getX() {
         return x;
     }
 
-    public int getY(){
+    public double getY() {
         return y;
     }
 
-    public void setX(int x){
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void setY(int y){
+    public void setY(double y) {
         this.y = y;
     }
 
-    public double getEntityWidth(){
+    public double getEntityWidth() {
         return img.getWidth();
     }
 
-    public double getEntityHeight(){
+    public double getEntityHeight() {
         return img.getHeight();
     }
 
-    public Image getImg(){
+    public Image getImg() {
         return img;
     }
 
-    public void setImg(Image img){
+    public void setImg(Image img) {
         this.img = img;
-    }
-
-    public static boolean isColliding(Entity first, Entity second){
-        if(first instanceof Grass || second instanceof Grass){
-            return false;
-        }
-        Rectangle firstEntity =
-                new Rectangle(first.x, first.y,
-                        (int) Math.round(first.getEntityWidth()), (int) Math.round(first.getEntityHeight()));
-        Rectangle secondEntity =
-                new Rectangle(second.x, second.y,
-                        (int) Math.round(second.getEntityWidth()), (int) Math.round(second.getEntityHeight()));
-        return firstEntity.intersects(secondEntity);
-    }
-
-    public static Entity getNextEntity(int x, int y){
-        return Maps.maps.get(0).getStillObjects().get(y * BombermanGame.WIDTH + x);
+        updateImg();
     }
 
     public abstract void update();
