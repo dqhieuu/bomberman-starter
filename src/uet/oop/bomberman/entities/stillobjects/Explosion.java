@@ -1,6 +1,5 @@
-package uet.oop.bomberman.entities.StillObjects;
+package uet.oop.bomberman.entities.stillobjects;
 
-import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.graphics.Sprite;
@@ -34,6 +33,6 @@ public class Explosion extends CollidableObject {
     }
 
     public void setExplosionImage() {
-        this.setImg(Sprite.animation(firstExplosion, secondExplosion, thirdExplosion, animationIndex).getFxImage());
+       // this.setCurrentImg(Sprite.animation(firstExplosion, secondExplosion, thirdExplosion, animationIndex).getFxImage());
     }
 }

@@ -1,18 +1,16 @@
-package uet.oop.bomberman.entities.StillObjects;
+package uet.oop.bomberman.entities.stillobjects;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.image.Image;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.graphics.Sprite;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Bomb extends CollidableObject {
-    protected Timeline timeline = new Timeline();
-    protected boolean hasPlanted;
+    protected Timeline timeline;
     protected boolean hasExploded;
     protected boolean exploding;
     protected int numberOfFlames;
@@ -23,37 +21,20 @@ public class Bomb extends CollidableObject {
     protected int explodeLimitEast;
     protected int explodeLimitWest;
 
-    public Bomb(double x, double y, Image img) {
-        super(x, y, img);
-        hasPlanted = false;
-        hasExploded = false;
+    public Bomb(double x, double y) {
+        super(x, y, Sprite.bomb.getFxImage());
+        timeline = new Timeline();
         exploding = false;
         numberOfFlames = 0;
         setAnimation();
     }
 
-    public boolean isHasPlanted() {
-        return hasPlanted;
-    }
-
-    public void setHasPlanted(boolean hasPlanted) {
-        this.hasPlanted = hasPlanted;
-    }
-
-    public boolean isHasExploded() {
-        return hasExploded;
-    }
-
-    public void setHasExploded(boolean hasExploded) {
-        this.hasExploded = hasExploded;
-    }
 
     public void setExploding(boolean exploding) {
         this.exploding = exploding;
     }
 
-    public ArrayList<Explosion> getExplodeAnimation() {
-        return BombermanGame.allMaps.getMaps().get(BombermanGame.level - 1).getExplodeAnimation();
+    public List<Explosion> getExplodeAnimation() { return BombermanGame.currentLevel.getFlames();
     }
 
     public void setAnimation() {
@@ -68,7 +49,6 @@ public class Bomb extends CollidableObject {
                             explosion.updateAnimationIndex();
                         }
                         if (this.getExplodeAnimation().get(0).getAnimationIndex() == 4) {
-                            this.setHasPlanted(false);
                             this.setExploding(false);
                             this.getExplodeAnimation().clear();
                         }
@@ -86,8 +66,8 @@ public class Bomb extends CollidableObject {
     }
 
     public void setAttribute() {
-        this.setX(BombermanGame.bomberman.getBombX());
-        this.setY(BombermanGame.bomberman.getBombY());
+        this.setGridX(BombermanGame.bomberman.getBombX());
+        this.setGridY(BombermanGame.bomberman.getBombY());
         this.setExplodeLimit(BombermanGame.bomberman.getExplodeRange());
         this.checkSurrounding();
         this.setExplodeAnimation();
@@ -95,7 +75,6 @@ public class Bomb extends CollidableObject {
 
     @Override
     public void update() {
-        if (hasPlanted) {
             if (exploding) {
                 for (Explosion explosion : this.getExplodeAnimation()) {
                     explosion.update();
@@ -108,27 +87,26 @@ public class Bomb extends CollidableObject {
             } else if (!exploding) {
                 this.render(BombermanGame.gc);
             }
-        }
     }
 
     /**
      * Check the surrounding for walls in order to draw the required explosion sprite.
      */
     public void checkSurrounding() {
-        int limit = BombermanGame.allMaps.getMaps().get(BombermanGame.level - 1).getStillObjects().size();
+        int limit = BombermanGame.currentLevel.getStillObjects().size();
         for (int i = -1; i >= -explodeLimit; i--) {
-            int check = (int) y * BombermanGame.WIDTH + (int) (x + i);
+            int check = (int) gridY * BombermanGame.mapWidth + (int) (gridX + i);
             if (check <= limit && check >= 0) {
-                if (BombermanGame.getNextStillObjects(x + i, y) instanceof Wall) {
+                if (BombermanGame.getNextStillObjects(gridX + i, gridY) instanceof Wall) {
                     explodeLimitWest = Math.abs(i) - 1;
                     break;
                 }
             }
         }
         for (int i = -1; i >= -explodeLimit; i--) {
-            int check = (int) (y + i) * BombermanGame.WIDTH + (int) x;
+            int check = (int) (gridY + i) * BombermanGame.mapWidth + (int) gridX;
             if (check <= limit && check >= 0) {
-                if (BombermanGame.getNextStillObjects(x, y + i) instanceof Wall) {
+                if (BombermanGame.getNextStillObjects(gridX, gridY + i) instanceof Wall) {
                     explodeLimitNorth = Math.abs(i) - 1;
                     break;
                 }
@@ -136,18 +114,18 @@ public class Bomb extends CollidableObject {
         }
 
         for (int i = 1; i <= explodeLimit; i++) {
-            int check = (int) y * BombermanGame.WIDTH + (int) (x + i);
+            int check = (int) gridY * BombermanGame.mapWidth + (int) (gridX + i);
             if (check <= limit && check >= 0) {
-                if (BombermanGame.getNextStillObjects(x + i, y) instanceof Wall) {
+                if (BombermanGame.getNextStillObjects(gridX + i, gridY) instanceof Wall) {
                     explodeLimitEast = i - 1;
                     break;
                 }
             }
         }
         for (int i = 1; i <= explodeLimit; i++) {
-            int check = (int) (y + i) * BombermanGame.WIDTH + (int) x;
+            int check = (int) (gridY + i) * BombermanGame.mapWidth + (int) gridX;
             if (check <= limit && check >= 0) {
-                if (BombermanGame.getNextStillObjects(x, y + i) instanceof Wall) {
+                if (BombermanGame.getNextStillObjects(gridX, gridY + i) instanceof Wall) {
                     explodeLimitSouth = i - 1;
                     break;
                 }
@@ -159,7 +137,7 @@ public class Bomb extends CollidableObject {
      * Add all explosion sprite for later rendering.
      */
     public void setExplodeAnimation() {
-        Explosion centerExplosion = new Explosion(x, y,
+        Explosion centerExplosion = new Explosion(gridX, gridY,
                 Sprite.bomb_exploded,
                 Sprite.bomb_exploded1,
                 Sprite.bomb_exploded2);
@@ -167,14 +145,14 @@ public class Bomb extends CollidableObject {
         numberOfFlames++;
         for (int i = 1; i <= explodeLimitWest; i++) {
             if (i == explodeLimitWest) {
-                Explosion explosion = new Explosion(x - i, y,
+                Explosion explosion = new Explosion(gridX - i, gridY,
                         Sprite.explosion_horizontal_left_last,
                         Sprite.explosion_horizontal_left_last1,
                         Sprite.explosion_horizontal_left_last2);
                 this.getExplodeAnimation().add(explosion);
                 numberOfFlames++;
             } else {
-                Explosion explosionLeft = new Explosion(x - i, y,
+                Explosion explosionLeft = new Explosion(gridX - i, gridY,
                         Sprite.explosion_horizontal,
                         Sprite.explosion_horizontal1,
                         Sprite.explosion_horizontal2);
@@ -184,14 +162,14 @@ public class Bomb extends CollidableObject {
         }
         for (int i = 1; i <= explodeLimitEast; i++) {
             if (i == explodeLimitEast) {
-                Explosion explosion = new Explosion(x + i, y,
+                Explosion explosion = new Explosion(gridX + i, gridY,
                         Sprite.explosion_horizontal_right_last,
                         Sprite.explosion_horizontal_right_last1,
                         Sprite.explosion_horizontal_right_last2);
                 this.getExplodeAnimation().add(explosion);
                 numberOfFlames++;
             } else {
-                Explosion explosionRight = new Explosion(x + i, y,
+                Explosion explosionRight = new Explosion(gridX + i, gridY,
                         Sprite.explosion_horizontal,
                         Sprite.explosion_horizontal1,
                         Sprite.explosion_horizontal2);
@@ -201,14 +179,14 @@ public class Bomb extends CollidableObject {
         }
         for (int i = 1; i <= explodeLimitNorth; i++) {
             if (i == explodeLimitNorth) {
-                Explosion explosion = new Explosion(x, y - i,
+                Explosion explosion = new Explosion(gridX, gridY - i,
                         Sprite.explosion_vertical_top_last,
                         Sprite.explosion_vertical_top_last1,
                         Sprite.explosion_vertical_top_last2);
                 this.getExplodeAnimation().add(explosion);
                 numberOfFlames++;
             } else {
-                Explosion explosionTop = new Explosion(x, y - i,
+                Explosion explosionTop = new Explosion(gridX, gridY - i,
                         Sprite.explosion_vertical,
                         Sprite.explosion_vertical1,
                         Sprite.explosion_vertical2);
@@ -218,14 +196,14 @@ public class Bomb extends CollidableObject {
         }
         for (int i = 1; i <= explodeLimitSouth; i++) {
             if (i == explodeLimitSouth) {
-                Explosion explosion = new Explosion(x, y + i,
+                Explosion explosion = new Explosion(gridX, gridY + i,
                         Sprite.explosion_vertical_down_last,
                         Sprite.explosion_vertical_down_last1,
                         Sprite.explosion_vertical_down_last2);
                 this.getExplodeAnimation().add(explosion);
                 numberOfFlames++;
             } else {
-                Explosion explosionDown = new Explosion(x, y + i,
+                Explosion explosionDown = new Explosion(gridX, gridY + i,
                         Sprite.explosion_vertical,
                         Sprite.explosion_vertical1,
                         Sprite.explosion_vertical2);

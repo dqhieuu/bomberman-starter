@@ -1,75 +1,105 @@
 package uet.oop.bomberman.entities;
 
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 import uet.oop.bomberman.BombermanGame;
-import uet.oop.bomberman.entities.StillObjects.Grass;
-import uet.oop.bomberman.graphics.Maps;
 import uet.oop.bomberman.graphics.Sprite;
-
-import javafx.scene.shape.Rectangle;
+import uet.oop.bomberman.utils.Camera;
 
 public abstract class Entity {
-    protected double x;
-    protected double y;
-    protected Image img;
-    private Image base;
+  protected double gridX;
+  protected double gridY;
+  protected Image currentImg;
+  protected Camera camera;
+  protected boolean exists;
 
-    public Entity(double x, double y, Image img) {
-        this.x = x;
-        this.y = y;
-        this.img = img;
-        updateImg();
+  public Entity(double gridX, double gridY) {
+    exists = true;
+    this.gridX = gridX;
+    this.gridY = gridY;
+  }
+
+  public Entity(double gridX, double gridY, Image image) {
+    exists = true;
+    this.gridX = gridX;
+    this.gridY = gridY;
+    setCurrentImg(image);
+  }
+
+  public Entity(double gridX, double gridY, Image image, Camera camera) {
+    exists = true;
+    this.gridX = gridX;
+    this.gridY = gridY;
+    setCurrentImg(image);
+    this.camera = camera;
+  }
+
+  public void render(GraphicsContext gc) {
+    if (exists && currentImg != null) {
+      if (camera != null) {
+        gc.drawImage(
+            currentImg,
+            getRealX() - camera.getX(),
+            getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
+      } else {
+        gc.drawImage(currentImg, getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
+      }
     }
+  }
 
-    private void updateImg() {
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-        ImageView iv = new ImageView(img);
-        base = iv.snapshot(params, null);
+  public void renderAsUI(GraphicsContext gc) {
+    if (exists && currentImg != null) {
+      gc.drawImage(currentImg, getRealX(), getRealY());
     }
+  }
 
-    public void render(GraphicsContext gc) {
+  public double getGridX() {
+    return gridX;
+  }
 
-        gc.drawImage(base, x * Sprite.SCALED_SIZE, y * Sprite.SCALED_SIZE);
-    }
+  public double getGridY() {
+    return gridY;
+  }
 
-    public double getX() {
-        return x;
-    }
+  public void setGridX(double gridX) {
+    this.gridX = gridX;
+  }
 
-    public double getY() {
-        return y;
-    }
+  public void setGridY(double gridY) {
+    this.gridY = gridY;
+  }
 
-    public void setX(double x) {
-        this.x = x;
-    }
+  public int getRealX() {
+    return (int) (gridX * Sprite.SCALED_SIZE);
+  }
 
-    public void setY(double y) {
-        this.y = y;
-    }
+  public int getRealY() {
+    return (int) (gridY * Sprite.SCALED_SIZE);
+  }
 
-    public double getEntityWidth() {
-        return img.getWidth();
-    }
+  public double getEntityWidth() {
+    return currentImg.getWidth();
+  }
 
-    public double getEntityHeight() {
-        return img.getHeight();
-    }
+  public double getEntityHeight() {
+    return currentImg.getHeight();
+  }
 
-    public Image getImg() {
-        return img;
-    }
+  public void setCurrentImg(Image img) {
+    this.currentImg = img;
+  }
 
-    public void setImg(Image img) {
-        this.img = img;
-        updateImg();
-    }
+  public void setCamera(Camera camera) {
+    this.camera = camera;
+  }
 
-    public abstract void update();
+  public void destroy() {
+    exists = false;
+  }
+
+  public boolean isDestroyed() {
+    return !exists;
+  }
+
+  public abstract void update();
 }
