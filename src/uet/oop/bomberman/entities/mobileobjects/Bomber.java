@@ -4,12 +4,14 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.stillobjects.Bomb;
 import uet.oop.bomberman.entities.UserControlledObject;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
+import uet.oop.bomberman.misc.MovePad;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +20,15 @@ import java.util.Map;
 public class Bomber extends UserControlledObject {
   private static Map<String, Image[]> spriteLists;
   private final Animation spriteChanger;
+  private int spriteIndex;
 
-  protected int numberOfBombs;
+  protected int bombsCanPlant;
+  protected int bombsBlastRadius;
+
   protected int bombsPlanted;
-  protected int explodeRange;
+
   protected ArrayList<Bomb> bombs = new ArrayList<>();
   private double baseSpeed = 0.04;
-
-  private int spriteIndex;
 
   public Bomber(double x, double y) {
     super(x, y, Sprite.player_right.getFxImage());
@@ -66,31 +69,16 @@ public class Bomber extends UserControlledObject {
             new KeyFrame(
                 Duration.millis(100),
                 e -> {
-                  if (facingDirection == Direction.EAST) {
-                    spriteIndex =
-                        (spriteIndex + 1) % spriteLists.get(Direction.EAST.toString()).length;
-                    setCurrentImg(spriteLists.get(Direction.EAST.toString())[spriteIndex]);
-                  } else if (facingDirection == Direction.WEST) {
-                    spriteIndex =
-                        (spriteIndex + 1) % spriteLists.get(Direction.WEST.toString()).length;
-                    setCurrentImg(spriteLists.get(Direction.WEST.toString())[spriteIndex]);
-                  } else if (facingDirection == Direction.NORTH) {
-                    spriteIndex =
-                        (spriteIndex + 1) % spriteLists.get(Direction.NORTH.toString()).length;
-                    setCurrentImg(spriteLists.get(Direction.NORTH.toString())[spriteIndex]);
-                  } else {
-                    spriteIndex =
-                        (spriteIndex + 1) % spriteLists.get(Direction.SOUTH.toString()).length;
-                    setCurrentImg(spriteLists.get(Direction.SOUTH.toString())[spriteIndex]);
-                  }
+                  spriteIndex =
+                      (spriteIndex + 1) % spriteLists.get(facingDirection.toString()).length;
+                  setCurrentImg(spriteLists.get(facingDirection.toString())[spriteIndex]);
                 }));
     spriteChanger.setCycleCount(Animation.INDEFINITE);
 
-    explodeRange = 3;
-    numberOfBombs = 1;
+    bombsBlastRadius = 3;
+    bombsCanPlant = 1;
     bombsPlanted = 0;
   }
-
 
   @Override
   public void update() {
@@ -103,20 +91,20 @@ public class Bomber extends UserControlledObject {
     this.render(BombermanGame.gc);
   }
 
-  private void setNumberOfBombs(int numberOfBombs) {
-    this.numberOfBombs = numberOfBombs;
+  private void setBombsCanPlant(int bombsCanPlant) {
+    this.bombsCanPlant = bombsCanPlant;
   }
 
-  private int getNumberOfBombs() {
-    return numberOfBombs;
+  private int getBombsCanPlant() {
+    return bombsCanPlant;
   }
 
-  public void setExplodeRange(int explodeRange) {
-    this.explodeRange = explodeRange;
+  public void setBombsBlastRadius(int bombsBlastRadius) {
+    this.bombsBlastRadius = bombsBlastRadius;
   }
 
-  public int getExplodeRange() {
-    return explodeRange;
+  public int getBombsBlastRadius() {
+    return bombsBlastRadius;
   }
 
   public ArrayList<Bomb> getBombs() {
@@ -124,8 +112,8 @@ public class Bomber extends UserControlledObject {
   }
 
   public void setBombs() {
-    if (numberOfBombs > bombs.size()) {
-      for (int i = 0; i < numberOfBombs - bombs.size(); i++) {
+    if (bombsCanPlant > bombs.size()) {
+      for (int i = 0; i < bombsCanPlant - bombs.size(); i++) {
         Bomb newBomb = new Bomb(0, 0);
         bombs.add(newBomb);
       }
@@ -148,6 +136,64 @@ public class Bomber extends UserControlledObject {
     return Math.round(gridY);
   }
 
+  public void bindInput() {
+    BombermanGame.primaryStage
+        .getScene()
+        .setOnKeyPressed(
+            keyEvent -> {
+              KeyCode key = keyEvent.getCode();
+              switch (key) {
+                case LEFT:
+                case A:
+                  movePad.left = true;
+                  break;
+                case RIGHT:
+                case D:
+                  movePad.right = true;
+                  break;
+                case UP:
+                case W:
+                  movePad.up = true;
+                  break;
+                case DOWN:
+                case S:
+                  movePad.down = true;
+                  break;
+                case SPACE:
+                  Bomb bomb = searchBomb();
+                  if (bomb != null) {
+                    bomb.detonate();
+                  }
+                  break;
+              }
+            });
+
+    BombermanGame.primaryStage
+        .getScene()
+        .setOnKeyReleased(
+            keyEvent -> {
+              KeyCode key = keyEvent.getCode();
+              switch (key) {
+                case LEFT:
+                case A:
+                  movePad.left = false;
+                  break;
+                case RIGHT:
+                case D:
+                  movePad.right = false;
+                  break;
+                case UP:
+                case W:
+                  movePad.up = false;
+                  break;
+                case DOWN:
+                case S:
+                  movePad.down = false;
+                  break;
+              }
+            });
+  }
+
   public void moveLeft() {
     if (facingDirection != Direction.WEST) {
       setFacingDirection(Direction.WEST);
@@ -157,6 +203,7 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
+
     gridX -= baseSpeed;
     if (!movable()) {
       gridX += baseSpeed;
@@ -172,6 +219,7 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
+
     gridX += baseSpeed;
     if (!movable()) {
       gridX -= baseSpeed;
@@ -187,6 +235,7 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
+
     gridY -= baseSpeed;
     if (!movable()) {
       gridY += baseSpeed;
@@ -202,6 +251,7 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
+
     gridY += baseSpeed;
     if (!movable()) {
       gridY -= baseSpeed;
@@ -226,5 +276,19 @@ public class Bomber extends UserControlledObject {
     } else if (movePad.down && !movePad.up) {
       moveDown();
     }
+  }
+
+  public void increaseBaseSpeed() {
+    if (baseSpeed <= 0.06) {
+      baseSpeed += 0.005;
+    }
+  }
+
+  public void increaseNumberOfBombs() {
+    bombsCanPlant++;
+  }
+
+  public void increaseBombsBlastRadius() {
+    bombsBlastRadius++;
   }
 }

@@ -9,7 +9,6 @@ public class ErrorDialog {
     error.setHeaderText(title);
     error.setContentText(message);
     error.showAndWait();
-    System.exit(0);
   }
 
   public static void displayAndExit(String title, String message) {

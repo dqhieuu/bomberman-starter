@@ -18,4 +18,6 @@ public abstract class UserControlledObject extends MovableObject {
     public MovePad getMovePad() {
         return movePad;
     }
+
+//    public abstract void bindInput();
 }

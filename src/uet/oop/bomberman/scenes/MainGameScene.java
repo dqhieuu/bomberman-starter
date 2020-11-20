@@ -11,12 +11,14 @@ import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.mobileobjects.Ballom;
 import uet.oop.bomberman.entities.MovableObject;
+import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.entities.stillobjects.Explosion;
 import uet.oop.bomberman.entities.stillobjects.Grass;
 import uet.oop.bomberman.entities.stillobjects.Wall;
 import uet.oop.bomberman.entities.Text;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.ErrorDialog;
+import uet.oop.bomberman.utils.Camera;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -34,6 +36,10 @@ public class MainGameScene implements Scene {
   private List<Entity> stillObjects = new ArrayList<>();
   protected List<Explosion> flames = new ArrayList<>();
 
+  public static Camera camera;
+
+  public static Bomber bomberman = new Bomber(1, 1);
+
   private boolean[][] solidTiles;
 
   private int playerPoints;
@@ -45,7 +51,6 @@ public class MainGameScene implements Scene {
   private final Text textLives;
 
   private Animation countdownTimer;
-
 
   public MainGameScene(String path) {
     playerPoints = 0;
@@ -61,12 +66,16 @@ public class MainGameScene implements Scene {
     textTime.setText(String.format("TIME %d", timeLeft));
 
     // decreases time by 1 every 1 second
-    countdownTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-      if (timeLeft > 0) {
-        timeLeft--;
-      }
-      textTime.setText(String.format("TIME %d", timeLeft));
-    }));
+    countdownTimer =
+        new Timeline(
+            new KeyFrame(
+                Duration.seconds(1),
+                e -> {
+                  if (timeLeft > 0) {
+                    timeLeft--;
+                  }
+                  textTime.setText(String.format("TIME %d", timeLeft));
+                }));
     countdownTimer.setCycleCount(Timeline.INDEFINITE);
     countdownTimer.play();
 
@@ -75,6 +84,13 @@ public class MainGameScene implements Scene {
     } else {
       ErrorDialog.displayAndExit("Lỗi khi load cảnh", "Load cảnh chính lỗi.");
     }
+    camera =
+        new Camera(
+            BombermanGame.CANVAS_WIDTH,
+            BombermanGame.CANVAS_HEIGHT - BombermanGame.CANVAS_OFFSET_Y,
+            getRealWidth(),
+            getRealHeight());
+    camera.attachCamera(bomberman);
   }
 
   public List<Explosion> getFlames() {
@@ -83,7 +99,8 @@ public class MainGameScene implements Scene {
 
   private boolean readData(String path) {
     try {
-      BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
+      BufferedReader br =
+          new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
       String firstLine;
       firstLine = br.readLine();
       Pattern pattern = Pattern.compile("(^.+)\\s+(\\d+)\\s+(\\d+$)");
@@ -142,10 +159,10 @@ public class MainGameScene implements Scene {
 
   public void addCamera() {
     for (Entity e : stillObjects) {
-      e.setCamera(BombermanGame.camera);
+      e.setCamera(camera);
     }
     for (Entity e : animateObjects) {
-      e.setCamera(BombermanGame.camera);
+      e.setCamera(camera);
     }
   }
 
@@ -186,12 +203,14 @@ public class MainGameScene implements Scene {
     return this.stillObjects;
   }
 
+
   @Override
   public void update() {
     //        if(stillObjects.size()>0)
     //        stillObjects.removeIf(Entity::isDestroyed);
     //        if(animateObjects.size()>0)
     //        animateObjects.removeIf(Entity::isDestroyed);
+    camera.updateCamera();
   }
 
   @Override

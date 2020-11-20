@@ -11,7 +11,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import uet.oop.bomberman.entities.*;
-import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.entities.stillobjects.Bomb;
 import uet.oop.bomberman.scenes.MainGameScene;
 
@@ -23,25 +22,26 @@ public class BombermanGame extends Application {
   public static final int CANVAS_WIDTH = 512;
   public static final int CANVAS_HEIGHT = 480;
   public static Font pixelFont;
-  public static MainGameScene currentLevel = new MainGameScene("/levels/Level1.txt");
-  public static int mapWidth = currentLevel.getGridWidth();
-  public static int mapHeight = currentLevel.getGridHeight();
+  public static MainGameScene currentScene;
+//  public static int mapWidth = currentScene.getGridWidth();
+//  public static int mapHeight = currentScene.getGridHeight();
 
   public static MovePad pad = new MovePad();
 
+
+  public static Stage primaryStage;
   public static GraphicsContext gc;
   public static Canvas canvas;
-  public static Camera camera;
+//  public static Camera camera;
 
   private static PerformanceTracker tracker;
 
   private static int frameCount = 0;
 
-  public static Stage primaryStage;
 
   // TODO: đem bomber các thứ về class MainGameScene, xử lí logic nằm trong các scene
 
-  public static Bomber bomberman = new Bomber(1, 1);
+//  public static Bomber bomberman = new Bomber(1, 1);
 
   public static void main(String[] args) {
     Application.launch(BombermanGame.class);
@@ -50,20 +50,21 @@ public class BombermanGame extends Application {
   @Override
   public void init() {
     pixelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/Pixel_NES.otf"), 24);
-    camera =
-        new Camera(
-            CANVAS_WIDTH,
-            CANVAS_HEIGHT - CANVAS_OFFSET_Y,
-            currentLevel.getRealWidth(),
-            currentLevel.getRealHeight());
+//    camera =
+//        new Camera(
+//            CANVAS_WIDTH,
+//            CANVAS_HEIGHT - CANVAS_OFFSET_Y,
+//            currentScene.getRealWidth(),
+//            currentScene.getRealHeight());
   }
 
   @Override
   public void start(Stage stage) {
-    BombermanGame.primaryStage = stage;
-    camera.attachCamera(bomberman);
-    currentLevel.getAnimateObjects().add(bomberman);
-    currentLevel.addCamera();
+    currentScene = new MainGameScene("/levels/Level1.txt");
+    primaryStage = stage;
+//    camera.attachCamera(bomberman);
+//    currentScene.getAnimateObjects().add(bomberman);
+//    currentScene.addCamera();
 
     // Tao Canvas
     canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -77,65 +78,65 @@ public class BombermanGame extends Application {
     // Tao scene
     Scene scene = new Scene(root);
 
-    scene.setOnKeyPressed(
-        keyEvent -> {
-          KeyCode key = keyEvent.getCode();
-          switch (key) {
-            case LEFT:
-            case A:
-              pad.left = true;
-              bomberman.setMovePad(pad);
-              break;
-            case RIGHT:
-            case D:
-              pad.right = true;
-              bomberman.setMovePad(pad);
-              break;
-            case UP:
-            case W:
-              pad.up = true;
-              bomberman.setMovePad(pad);
-              break;
-            case DOWN:
-            case S:
-              pad.down = true;
-              bomberman.setMovePad(pad);
-              break;
-            case SPACE:
-              Bomb bomb = bomberman.searchBomb();
-              if (bomb != null) {
-                bomb.detonate();
-              }
-              break;
-          }
-        });
-
-    scene.setOnKeyReleased(
-        keyEvent -> {
-          KeyCode key = keyEvent.getCode();
-          switch (key) {
-            case LEFT:
-            case A:
-              pad.left = false;
-              bomberman.setMovePad(pad);
-              break;
-            case RIGHT:
-            case D:
-              pad.right = false;
-              bomberman.setMovePad(pad);
-              break;
-            case UP:
-            case W:
-              pad.up = false;
-              bomberman.setMovePad(pad);
-              break;
-            case DOWN:
-            case S:
-              pad.down = false;
-              bomberman.setMovePad(pad);
-              break;
-          }
-        });
+//    scene.setOnKeyPressed(
+//        keyEvent -> {
+//          KeyCode key = keyEvent.getCode();
+//          switch (key) {
+//            case LEFT:
+//            case A:
+//              pad.left = true;
+//              bomberman.setMovePad(pad);
+//              break;
+//            case RIGHT:
+//            case D:
+//              pad.right = true;
+//              bomberman.setMovePad(pad);
+//              break;
+//            case UP:
+//            case W:
+//              pad.up = true;
+//              bomberman.setMovePad(pad);
+//              break;
+//            case DOWN:
+//            case S:
+//              pad.down = true;
+//              bomberman.setMovePad(pad);
+//              break;
+//            case SPACE:
+//              Bomb bomb = bomberman.searchBomb();
+//              if (bomb != null) {
+//                bomb.detonate();
+//              }
+//              break;
+//          }
+//        });
+//
+//    scene.setOnKeyReleased(
+//        keyEvent -> {
+//          KeyCode key = keyEvent.getCode();
+//          switch (key) {
+//            case LEFT:
+//            case A:
+//              pad.left = false;
+//              bomberman.setMovePad(pad);
+//              break;
+//            case RIGHT:
+//            case D:
+//              pad.right = false;
+//              bomberman.setMovePad(pad);
+//              break;
+//            case UP:
+//            case W:
+//              pad.up = false;
+//              bomberman.setMovePad(pad);
+//              break;
+//            case DOWN:
+//            case S:
+//              pad.down = false;
+//              bomberman.setMovePad(pad);
+//              break;
+//          }
+//        });
 
     // Them scene vao stage
     stage.setScene(scene);
@@ -151,8 +152,8 @@ public class BombermanGame extends Application {
           @Override
           public void handle(long l) {
             update();
-            camera.updateCamera();
-            currentLevel.render(gc);
+//            camera.updateCamera();
+            render();
             printFps();
           }
         };
@@ -172,10 +173,15 @@ public class BombermanGame extends Application {
   }
 
   public void update() {
-    currentLevel.getAnimateObjects().forEach(Entity::update);
+    currentScene.update();
+    currentScene.getAnimateObjects().forEach(Entity::update);
+  }
+
+  public void render() {
+    currentScene.render(gc);
   }
 
   public static Entity getNextStillObjects(double x, double y) {
-    return currentLevel.getStillObjects().get((int) y * mapWidth + (int) x);
+    return currentScene.getStillObjects().get((int) y * mapWidth + (int) x);
   }
 }
