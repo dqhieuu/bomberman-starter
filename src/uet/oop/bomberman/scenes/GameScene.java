@@ -2,7 +2,7 @@ package uet.oop.bomberman.scenes;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public interface Scene {
+public interface GameScene {
   void update();
   void render(GraphicsContext gc);
 }

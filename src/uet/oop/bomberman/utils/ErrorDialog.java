@@ -1,4 +1,4 @@
-package uet.oop.bomberman.misc;
+package uet.oop.bomberman.utils;
 
 import javafx.scene.control.Alert;
 

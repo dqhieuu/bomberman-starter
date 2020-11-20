@@ -7,181 +7,101 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import uet.oop.bomberman.entities.*;
-import uet.oop.bomberman.entities.stillobjects.Bomb;
 import uet.oop.bomberman.scenes.MainGameScene;
 
-import uet.oop.bomberman.utils.Camera;
-import uet.oop.bomberman.misc.MovePad;
+import java.awt.*;
 
 public class BombermanGame extends Application {
-  public static final int CANVAS_OFFSET_Y = 64;
-  public static final int CANVAS_WIDTH = 512;
-  public static final int CANVAS_HEIGHT = 480;
-  public static Font pixelFont;
-  public static MainGameScene currentScene;
-//  public static int mapWidth = currentScene.getGridWidth();
-//  public static int mapHeight = currentScene.getGridHeight();
+    public static final int CANVAS_OFFSET_Y = 64;
+    public static final int CANVAS_WIDTH = 512;
+    public static final int CANVAS_HEIGHT = 480;
+    public static final double TARGET_FRAME_RATE = 60.0;
 
-  public static MovePad pad = new MovePad();
+    public static int refreshRate;
+    public static double gameSpeed;
 
+    public static Font pixelFont;
 
-  public static Stage primaryStage;
-  public static GraphicsContext gc;
-  public static Canvas canvas;
-//  public static Camera camera;
+    public static MainGameScene currentGameScene;
 
-  private static PerformanceTracker tracker;
+    public static Stage primaryStage;
+    public static GraphicsContext gc;
+    public static Canvas canvas;
 
-  private static int frameCount = 0;
+    private static PerformanceTracker tracker;
+    private static int frameCount;
 
-
-  // TODO: đem bomber các thứ về class MainGameScene, xử lí logic nằm trong các scene
-
-//  public static Bomber bomberman = new Bomber(1, 1);
-
-  public static void main(String[] args) {
-    Application.launch(BombermanGame.class);
-  }
-
-  @Override
-  public void init() {
-    pixelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/Pixel_NES.otf"), 24);
-//    camera =
-//        new Camera(
-//            CANVAS_WIDTH,
-//            CANVAS_HEIGHT - CANVAS_OFFSET_Y,
-//            currentScene.getRealWidth(),
-//            currentScene.getRealHeight());
-  }
-
-  @Override
-  public void start(Stage stage) {
-    currentScene = new MainGameScene("/levels/Level1.txt");
-    primaryStage = stage;
-//    camera.attachCamera(bomberman);
-//    currentScene.getAnimateObjects().add(bomberman);
-//    currentScene.addCamera();
-
-    // Tao Canvas
-    canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-    gc = canvas.getGraphicsContext2D();
-    gc.setFont(pixelFont);
-
-    // Tao root container
-    Group root = new Group();
-    root.getChildren().add(canvas);
-
-    // Tao scene
-    Scene scene = new Scene(root);
-
-//    scene.setOnKeyPressed(
-//        keyEvent -> {
-//          KeyCode key = keyEvent.getCode();
-//          switch (key) {
-//            case LEFT:
-//            case A:
-//              pad.left = true;
-//              bomberman.setMovePad(pad);
-//              break;
-//            case RIGHT:
-//            case D:
-//              pad.right = true;
-//              bomberman.setMovePad(pad);
-//              break;
-//            case UP:
-//            case W:
-//              pad.up = true;
-//              bomberman.setMovePad(pad);
-//              break;
-//            case DOWN:
-//            case S:
-//              pad.down = true;
-//              bomberman.setMovePad(pad);
-//              break;
-//            case SPACE:
-//              Bomb bomb = bomberman.searchBomb();
-//              if (bomb != null) {
-//                bomb.detonate();
-//              }
-//              break;
-//          }
-//        });
-//
-//    scene.setOnKeyReleased(
-//        keyEvent -> {
-//          KeyCode key = keyEvent.getCode();
-//          switch (key) {
-//            case LEFT:
-//            case A:
-//              pad.left = false;
-//              bomberman.setMovePad(pad);
-//              break;
-//            case RIGHT:
-//            case D:
-//              pad.right = false;
-//              bomberman.setMovePad(pad);
-//              break;
-//            case UP:
-//            case W:
-//              pad.up = false;
-//              bomberman.setMovePad(pad);
-//              break;
-//            case DOWN:
-//            case S:
-//              pad.down = false;
-//              bomberman.setMovePad(pad);
-//              break;
-//          }
-//        });
-
-    // Them scene vao stage
-    stage.setScene(scene);
-    stage.setTitle("Bomberman");
-    stage.setResizable(false);
-    stage.show();
-
-    // Do fps
-    tracker = PerformanceTracker.getSceneTracker(scene);
-
-    AnimationTimer timer =
-        new AnimationTimer() {
-          @Override
-          public void handle(long l) {
-            update();
-//            camera.updateCamera();
-            render();
-            printFps();
-          }
-        };
-    timer.start();
-  }
-
-  public void printFps() {
-    if (frameCount >= 100) {
-      double fps = tracker.getAverageFPS();
-      System.out.printf("Current fps: %f\n", fps);
-      //   System.out.printf("%f, %f%n", bomberman.getX(), bomberman.getY());
-      tracker.resetAverageFPS();
-      frameCount = 0;
-    } else {
-      frameCount++;
+    public static void main(String[] args) {
+        Application.launch(BombermanGame.class);
     }
-  }
 
-  public void update() {
-    currentScene.update();
-    currentScene.getAnimateObjects().forEach(Entity::update);
-  }
+    @Override
+    public void init() {
+        pixelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/Pixel_NES.otf"), 24);
+        refreshRate = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].getDisplayMode().getRefreshRate();
+        gameSpeed = (refreshRate <= 0) ? 1.0 : TARGET_FRAME_RATE / refreshRate;
+        System.out.printf("Gane chay voi toc do bang %.2f lan binh thuong\n", gameSpeed);
+    }
 
-  public void render() {
-    currentScene.render(gc);
-  }
+    @Override
+    public void start(Stage stage) {
+        // Cap nhat bien toan cuc
+        primaryStage = stage;
 
-  public static Entity getNextStillObjects(double x, double y) {
-    return currentScene.getStillObjects().get((int) y * mapWidth + (int) x);
-  }
+        // Tao Canvas
+        canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        gc = canvas.getGraphicsContext2D();
+        gc.setFont(pixelFont);
+
+        // Tao root container
+        Group root = new Group();
+        root.getChildren().add(canvas);
+
+        // Tao scene
+        Scene scene = new Scene(root);
+
+        // Them scene vao stage
+        stage.setScene(scene);
+        stage.setTitle("Bomberman");
+        stage.setResizable(false);
+
+        // Load game scene mac dinh
+        currentGameScene = new MainGameScene("/levels/Level1.txt");
+        stage.show();
+
+        // Do fps
+        tracker = PerformanceTracker.getSceneTracker(scene);
+
+        AnimationTimer timer =
+                new AnimationTimer() {
+                    @Override
+                    public void handle(long l) {
+                        update();
+                        render();
+                        printFps();
+                    }
+                };
+        timer.start();
+    }
+
+    public void printFps() {
+        if (frameCount >= 100) {
+            double fps = tracker.getAverageFPS();
+            System.out.printf("Current fps: %f\n", fps);
+            tracker.resetAverageFPS();
+            frameCount = 0;
+        } else {
+            frameCount++;
+        }
+    }
+
+    public void update() {
+        currentGameScene.update();
+    }
+
+    public void render() {
+        currentGameScene.render(gc);
+    }
 }

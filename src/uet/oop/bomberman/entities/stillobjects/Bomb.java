@@ -1,243 +1,197 @@
 package uet.oop.bomberman.entities.stillobjects;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
+import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.misc.Direction;
+import uet.oop.bomberman.scenes.GameScene;
+import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.util.List;
 
 public class Bomb extends CollidableObject {
-  protected Bomber bombermanContext;
-  protected int blastRadius;
-  
-  protected Timeline timeline;
-  protected boolean hasExploded;
-  protected boolean exploding;
-  protected int numberOfFlames;
 
+    protected Bomber bombermanContext;
+    protected int blastRadius;
 
-  protected int explodeLimit;
-  protected int explodeLimitNorth;
-  protected int explodeLimitSouth;
-  protected int explodeLimitEast;
-  protected int explodeLimitWest;
+    protected boolean hasExploded;
 
-  public Bomb(double x, double y, int blastRadius, Bomber bomber) {
-    super(x, y, Sprite.bomb.getFxImage());
-    this.blastRadius = blastRadius;
-    bombermanContext = bomber;
-    timeline =
-        new Timeline(
-            new KeyFrame(
-                Duration.millis(200),
-                e -> {
-                  if (exploding) {
-                    for (Explosion explosion : this.getExplodeAnimation()) {
-                      explosion.setExplosionImage();
-                    }
-                    for (Explosion explosion : this.getExplodeAnimation()) {
-                      explosion.updateAnimationIndex();
-                    }
-                    if (this.getExplodeAnimation().get(0).getAnimationIndex() == 4) {
-                      this.setExploding(false);
-                      this.getExplodeAnimation().clear();
-                    }
-                  }
-                }));
-    timeline.setCycleCount(4);
-    exploding = false;
-    numberOfFlames = 0;
-  }
+    protected int spriteIndex;
+    protected boolean isAnimationReverse = false;
 
-  public void setExploding(boolean exploding) {
-    this.exploding = exploding;
-  }
+    private static final Image[] spriteList = {
+            Sprite.bomb.getFxImage(),
+            Sprite.bomb_1.getFxImage(),
+            Sprite.bomb_2.getFxImage(),
+    };
 
-  public List<Explosion> getExplodeAnimation() {
-    return BombermanGame.currentScene.getFlames();
-  }
+    public Bomb(GameScene scene, double x, double y, int blastRadius, Bomber bomber) {
+        super(scene, x, y, Sprite.bomb.getFxImage());
 
-  public void setExplodeLimit(int explodeLimit) {
-    this.explodeLimit = explodeLimit;
-    this.explodeLimitEast = explodeLimit;
-    this.explodeLimitNorth = explodeLimit;
-    this.explodeLimitSouth = explodeLimit;
-    this.explodeLimitWest = explodeLimit;
-  }
+        this.isSolid = true;
 
-  public void setAttribute() {
-    this.setGridX(bombermanContext.getBombX());
-    this.setGridY(bombermanContext.getBombY());
-    this.setExplodeLimit(bombermanContext.getBombsBlastRadius());
-    this.checkSurrounding();
-    this.setExplodeAnimation();
-  }
+        this.blastRadius = blastRadius;
+        bombermanContext = bomber;
+        spriteIndex = 0;
+        Animation spriteChanger =
+                new Timeline(
+                        new KeyFrame(
+                                Duration.millis(300),
+                                e -> {
+                                    if (spriteList.length < 2) return;
 
-  @Override
-  public void update() {
-    if (exploding) {
-      for (Explosion explosion : this.getExplodeAnimation()) {
-        explosion.update();
-      }
+                                    if (!isAnimationReverse) {
+                                        if (spriteIndex == spriteList.length - 1) {
+                                            spriteIndex--;
+                                            isAnimationReverse = true;
+                                        } else {
+                                            spriteIndex++;
+                                        }
+                                    } else {
+                                        if (spriteIndex == 0) {
+                                            spriteIndex++;
+                                            isAnimationReverse = false;
+                                        } else {
+                                            spriteIndex--;
+                                        }
+                                    }
+
+                                    setCurrentImg(spriteList[spriteIndex]);
+                                }));
+        spriteChanger.setCycleCount(Animation.INDEFINITE);
+        spriteChanger.play();
+        Animation countdown = new Timeline(new KeyFrame(Duration.seconds(3), e -> destroy()));
+        countdown.play();
     }
-    if (hasExploded) {
-      timeline.play();
-      hasExploded = false;
-      exploding = true;
-    } else if (!exploding) {
-      this.render(BombermanGame.gc);
-    }
-  }
 
-  /** Check the surrounding for walls in order to draw the required explosion sprite. */
-  public void checkSurrounding() {
-    int limit = BombermanGame.currentScene.getStillObjects().size();
-    for (int i = -1; i >= -explodeLimit; i--) {
-      int check = (int) gridY * BombermanGame.mapWidth + (int) (gridX + i);
-      if (check <= limit && check >= 0) {
-        if (BombermanGame.getNextStillObjects(gridX + i, gridY) instanceof Wall) {
-          explodeLimitWest = Math.abs(i) - 1;
-          break;
+    @Override
+    public void update() {
+    }
+
+    private boolean replaceTile(int curX, int curY, String flameType) {
+        Entity objectToBeDestroyed = ((MainGameScene) sceneContext).getStillObjectAt(curX, curY);
+        if (objectToBeDestroyed != null) {
+            if (objectToBeDestroyed instanceof Grass) {
+                Flame flame = new Flame(sceneContext, curX, curY, flameType);
+                flame.setCamera(camera);
+                ((MainGameScene) sceneContext).setStillObjectAt(flame, curX, curY);
+                return true;
+            } else {
+                if (!(objectToBeDestroyed instanceof Wall) && !(objectToBeDestroyed instanceof Flame)) {
+                    objectToBeDestroyed.destroy();
+                }
+            }
         }
-      }
-    }
-    for (int i = -1; i >= -explodeLimit; i--) {
-      int check = (int) (gridY + i) * BombermanGame.mapWidth + (int) gridX;
-      if (check <= limit && check >= 0) {
-        if (BombermanGame.getNextStillObjects(gridX, gridY + i) instanceof Wall) {
-          explodeLimitNorth = Math.abs(i) - 1;
-          break;
-        }
-      }
+        return false;
     }
 
-    for (int i = 1; i <= explodeLimit; i++) {
-      int check = (int) gridY * BombermanGame.mapWidth + (int) (gridX + i);
-      if (check <= limit && check >= 0) {
-        if (BombermanGame.getNextStillObjects(gridX + i, gridY) instanceof Wall) {
-          explodeLimitEast = i - 1;
-          break;
+    private void addFlameRight(int curX, int curY, int blastRadius) {
+        String type;
+        for (int i = 1; i < blastRadius; i++) {
+            if (i == blastRadius - 1) {
+                type = "right";
+            } else {
+                type = "horizontal";
+            }
+            if (!replaceTile(curX + i, curY, type)) {
+                return;
+            }
         }
-      }
     }
-    for (int i = 1; i <= explodeLimit; i++) {
-      int check = (int) (gridY + i) * BombermanGame.mapWidth + (int) gridX;
-      if (check <= limit && check >= 0) {
-        if (BombermanGame.getNextStillObjects(gridX, gridY + i) instanceof Wall) {
-          explodeLimitSouth = i - 1;
-          break;
+
+    private void addFlameLeft(int curX, int curY, int blastRadius) {
+        String type;
+        for (int i = 1; i < blastRadius; i++) {
+            if (i == blastRadius - 1) {
+                type = "left";
+            } else {
+                type = "horizontal";
+            }
+            if (!replaceTile(curX - i, curY, type)) {
+                return;
+            }
         }
-      }
     }
-  }
 
-  /** Add all explosion sprite for later rendering. */
-  public void setExplodeAnimation() {
-    Explosion centerExplosion =
-        new Explosion(
-            gridX, gridY, Sprite.bomb_exploded, Sprite.bomb_exploded1, Sprite.bomb_exploded2);
-    this.getExplodeAnimation().add(centerExplosion);
-    numberOfFlames++;
-    for (int i = 1; i <= explodeLimitWest; i++) {
-      if (i == explodeLimitWest) {
-        Explosion explosion =
-            new Explosion(
-                gridX - i,
-                gridY,
-                Sprite.explosion_horizontal_left_last,
-                Sprite.explosion_horizontal_left_last1,
-                Sprite.explosion_horizontal_left_last2);
-        this.getExplodeAnimation().add(explosion);
-        numberOfFlames++;
-      } else {
-        Explosion explosionLeft =
-            new Explosion(
-                gridX - i,
-                gridY,
-                Sprite.explosion_horizontal,
-                Sprite.explosion_horizontal1,
-                Sprite.explosion_horizontal2);
-        this.getExplodeAnimation().add(explosionLeft);
-        numberOfFlames++;
-      }
+    private void addFlameUp(int curX, int curY, int blastRadius) {
+        String type;
+        for (int i = 1; i < blastRadius; i++) {
+            if (i == blastRadius - 1) {
+                type = "top";
+            } else {
+                type = "vertical";
+            }
+            if (!replaceTile(curX, curY - i, type)) {
+                return;
+            }
+        }
     }
-    for (int i = 1; i <= explodeLimitEast; i++) {
-      if (i == explodeLimitEast) {
-        Explosion explosion =
-            new Explosion(
-                gridX + i,
-                gridY,
-                Sprite.explosion_horizontal_right_last,
-                Sprite.explosion_horizontal_right_last1,
-                Sprite.explosion_horizontal_right_last2);
-        this.getExplodeAnimation().add(explosion);
-        numberOfFlames++;
-      } else {
-        Explosion explosionRight =
-            new Explosion(
-                gridX + i,
-                gridY,
-                Sprite.explosion_horizontal,
-                Sprite.explosion_horizontal1,
-                Sprite.explosion_horizontal2);
-        this.getExplodeAnimation().add(explosionRight);
-        numberOfFlames++;
-      }
-    }
-    for (int i = 1; i <= explodeLimitNorth; i++) {
-      if (i == explodeLimitNorth) {
-        Explosion explosion =
-            new Explosion(
-                gridX,
-                gridY - i,
-                Sprite.explosion_vertical_top_last,
-                Sprite.explosion_vertical_top_last1,
-                Sprite.explosion_vertical_top_last2);
-        this.getExplodeAnimation().add(explosion);
-        numberOfFlames++;
-      } else {
-        Explosion explosionTop =
-            new Explosion(
-                gridX,
-                gridY - i,
-                Sprite.explosion_vertical,
-                Sprite.explosion_vertical1,
-                Sprite.explosion_vertical2);
-        this.getExplodeAnimation().add(explosionTop);
-        numberOfFlames++;
-      }
-    }
-    for (int i = 1; i <= explodeLimitSouth; i++) {
-      if (i == explodeLimitSouth) {
-        Explosion explosion =
-            new Explosion(
-                gridX,
-                gridY + i,
-                Sprite.explosion_vertical_down_last,
-                Sprite.explosion_vertical_down_last1,
-                Sprite.explosion_vertical_down_last2);
-        this.getExplodeAnimation().add(explosion);
-        numberOfFlames++;
-      } else {
-        Explosion explosionDown =
-            new Explosion(
-                gridX,
-                gridY + i,
-                Sprite.explosion_vertical,
-                Sprite.explosion_vertical1,
-                Sprite.explosion_vertical2);
-        this.getExplodeAnimation().add(explosionDown);
-        numberOfFlames++;
-      }
-    }
-  }
 
-  public void detonate() {
-    Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5000), e -> hasExploded = true));
-    timeline.play();
-  }
+    private void addFlameDown(int curX, int curY, int blastRadius) {
+        String type;
+        for (int i = 1; i < blastRadius; i++) {
+            if (i == blastRadius - 1) {
+                type = "bottom";
+            } else {
+                type = "vertical";
+            }
+            if (!replaceTile(curX, curY + i, type)) {
+                return;
+            }
+        }
+    }
+
+
+    public void setTilesOnFire() {
+        int intX = (int) gridX;
+        int intY = (int) gridY;
+        if (blastRadius >= 1) {
+            Flame flame = new Flame(sceneContext, gridX, gridY, "center");
+            flame.setCamera(camera);
+            ((MainGameScene) sceneContext).setStillObjectAt(flame, intX, intY);
+
+            if (blastRadius > 1) {
+                addFlameRight(intX, intY, blastRadius);
+                addFlameLeft(intX, intY, blastRadius);
+                addFlameUp(intX, intY, blastRadius);
+                addFlameDown(intX, intY, blastRadius);
+            }
+        }
+    }
+
+    @Override
+    public void destroy() {
+        if (!isDestroyed()) {
+            bombermanContext.retrieveBomb();
+            setTilesOnFire();
+            super.destroy();
+        }
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        if (exists && currentImg != null) {
+            if (camera != null) {
+                gc.drawImage(
+                        Sprite.grass.getFxImage(),
+                        getRealX() - camera.getX(),
+                        getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
+                gc.drawImage(
+                        currentImg,
+                        getRealX() - camera.getX(),
+                        getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
+            } else {
+                gc.drawImage(Sprite.grass.getFxImage(), getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
+                gc.drawImage(currentImg, getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
+            }
+        }
+    }
 }

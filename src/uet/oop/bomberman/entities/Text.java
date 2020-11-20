@@ -3,13 +3,14 @@ package uet.oop.bomberman.entities;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import uet.oop.bomberman.scenes.GameScene;
 
 public class Text extends Entity {
   private String text;
   private final boolean hasShadow;
 
-  public Text(double gridX, double gridY, boolean hasShadow) {
-    super(gridX, gridY);
+  public Text(GameScene scene, double gridX, double gridY, boolean hasShadow) {
+    super(scene, gridX, gridY);
     this.hasShadow = hasShadow;
   }
 

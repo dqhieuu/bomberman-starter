@@ -4,29 +4,34 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.utils.Camera;
 
 public abstract class Entity {
   protected double gridX;
   protected double gridY;
+  protected GameScene sceneContext;
   protected Image currentImg;
   protected Camera camera;
   protected boolean exists;
 
-  public Entity(double gridX, double gridY) {
+  public Entity(GameScene scene, double gridX, double gridY) {
+    sceneContext = scene;
     exists = true;
     this.gridX = gridX;
     this.gridY = gridY;
   }
 
-  public Entity(double gridX, double gridY, Image image) {
+  public Entity(GameScene scene, double gridX, double gridY, Image image) {
+    sceneContext = scene;
     exists = true;
     this.gridX = gridX;
     this.gridY = gridY;
     setCurrentImg(image);
   }
 
-  public Entity(double gridX, double gridY, Image image, Camera camera) {
+  public Entity(GameScene scene, double gridX, double gridY, Image image, Camera camera) {
+    sceneContext = scene;
     exists = true;
     this.gridX = gridX;
     this.gridY = gridY;

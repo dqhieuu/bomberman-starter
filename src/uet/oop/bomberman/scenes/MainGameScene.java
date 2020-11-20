@@ -7,17 +7,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
-import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.mobileobjects.Ballom;
 import uet.oop.bomberman.entities.MovableObject;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
-import uet.oop.bomberman.entities.stillobjects.Explosion;
-import uet.oop.bomberman.entities.stillobjects.Grass;
-import uet.oop.bomberman.entities.stillobjects.Wall;
+import uet.oop.bomberman.entities.stillobjects.*;
 import uet.oop.bomberman.entities.Text;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.misc.ErrorDialog;
+import uet.oop.bomberman.utils.ErrorDialog;
 import uet.oop.bomberman.utils.Camera;
 
 import java.io.*;
@@ -26,202 +23,221 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainGameScene implements Scene {
-  private String level;
-  private int gridWidth;
-  private int gridHeight;
-  private List<String> mapData;
+public class MainGameScene implements GameScene {
+    private String level;
+    private int gridWidth;
+    private int gridHeight;
+    private List<String> mapData;
 
-  private List<MovableObject> animateObjects = new ArrayList<>();
-  private List<Entity> stillObjects = new ArrayList<>();
-  protected List<Explosion> flames = new ArrayList<>();
+    private List<MovableObject> animateObjects = new ArrayList<>();
+    private Entity[][] stillObjects;
 
-  public static Camera camera;
+    protected List<Flame> flames = new ArrayList<>();
 
-  public static Bomber bomberman = new Bomber(1, 1);
+    public static Camera camera;
 
-  private boolean[][] solidTiles;
+    public static Bomber bomberman;
 
-  private int playerPoints;
-  private int playerLives;
-  private int timeLeft;
+    private boolean[][] solidTiles;
 
-  private final Text textPoints;
-  private final Text textTime;
-  private final Text textLives;
+    private int playerPoints;
+    private int playerLives;
+    private int timeLeft;
 
-  private Animation countdownTimer;
+    private final Text textPoints;
+    private final Text textTime;
+    private final Text textLives;
 
-  public MainGameScene(String path) {
-    playerPoints = 0;
-    playerLives = 3;
-    timeLeft = 200;
+    private Animation countdownTimer;
 
-    textTime = new Text(0.5, 1.5, true);
-    textPoints = new Text(8, 1.5, true);
-    textLives = new Text(11.5, 1.5, true);
+    public MainGameScene(String path) {
+        playerPoints = 0;
+        playerLives = 3;
+        timeLeft = 200;
 
-    textPoints.setText(String.valueOf(playerPoints));
-    textLives.setText(String.format("LEFT %d", playerLives));
-    textTime.setText(String.format("TIME %d", timeLeft));
+        textTime = new Text(this, 0.5, 1.5, true);
+        textPoints = new Text(this, 8, 1.5, true);
+        textLives = new Text(this, 11.5, 1.5, true);
 
-    // decreases time by 1 every 1 second
-    countdownTimer =
-        new Timeline(
-            new KeyFrame(
-                Duration.seconds(1),
-                e -> {
-                  if (timeLeft > 0) {
-                    timeLeft--;
-                  }
-                  textTime.setText(String.format("TIME %d", timeLeft));
-                }));
-    countdownTimer.setCycleCount(Timeline.INDEFINITE);
-    countdownTimer.play();
+        textPoints.setText(String.valueOf(playerPoints));
+        textLives.setText(String.format("LEFT %d", playerLives));
+        textTime.setText(String.format("TIME %d", timeLeft));
 
-    if (readData(path)) {
-      loadData();
-    } else {
-      ErrorDialog.displayAndExit("Lỗi khi load cảnh", "Load cảnh chính lỗi.");
-    }
-    camera =
-        new Camera(
-            BombermanGame.CANVAS_WIDTH,
-            BombermanGame.CANVAS_HEIGHT - BombermanGame.CANVAS_OFFSET_Y,
-            getRealWidth(),
-            getRealHeight());
-    camera.attachCamera(bomberman);
-  }
+        // decreases time by 1 every 1 second
+        countdownTimer =
+                new Timeline(
+                        new KeyFrame(
+                                Duration.seconds(1),
+                                e -> {
+                                    if (timeLeft > 0) {
+                                        timeLeft--;
+                                    }
+                                    textTime.setText(String.format("TIME %d", timeLeft));
+                                }));
+        countdownTimer.setCycleCount(Timeline.INDEFINITE);
+        countdownTimer.play();
 
-  public List<Explosion> getFlames() {
-    return flames;
-  }
+        if (!readMapFile(path)) {
+            ErrorDialog.displayAndExit("Lỗi khi load cảnh", "Load cảnh chính lỗi.");
+        }
 
-  private boolean readData(String path) {
-    try {
-      BufferedReader br =
-          new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
-      String firstLine;
-      firstLine = br.readLine();
-      Pattern pattern = Pattern.compile("(^.+)\\s+(\\d+)\\s+(\\d+$)");
-      Matcher matcher = pattern.matcher(firstLine);
+        bomberman = new Bomber(this, 1, 1);
 
-      if (matcher.find()) {
+        camera =
+                new Camera(
+                        BombermanGame.CANVAS_WIDTH,
+                        BombermanGame.CANVAS_HEIGHT - BombermanGame.CANVAS_OFFSET_Y,
+                        getRealWidth(),
+                        getRealHeight());
+        camera.attachCamera(bomberman);
+        bomberman.setCamera(camera);
+        animateObjects.forEach(e -> e.setCamera(camera));
 
-        level = matcher.group(1);
-        gridHeight = Integer.parseInt(matcher.group(2));
-        gridWidth = Integer.parseInt(matcher.group(3));
-        String currentLine;
-        List<String> mapStructure = new ArrayList<>();
-        while ((currentLine = br.readLine()) != null) {
-          if (currentLine.length() != 0) {
-            if (currentLine.length() != gridWidth) {
-              return false;
+        for (Entity[] arr : stillObjects) {
+            for (Entity e : arr) {
+                e.setCamera(camera);
             }
-            mapStructure.add(currentLine);
-          }
         }
 
-        if (mapStructure.size() == gridHeight) {
-          this.mapData = mapStructure;
-          return true;
+        bomberman.bindInput(BombermanGame.primaryStage.getScene());
+    }
+
+    public List<Flame> getFlames() {
+        return flames;
+    }
+
+    private boolean readMapFile(String path) {
+        try {
+            mapData = new ArrayList<>();
+            BufferedReader br =
+                    new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
+
+            String currentLine = br.readLine();
+            Pattern pattern = Pattern.compile("(^.+)\\s+(\\d+)\\s+(\\d+$)");
+            Matcher matcher = pattern.matcher(currentLine);
+
+            if (!matcher.find()) {
+                return false;
+            }
+
+            level = matcher.group(1);
+            gridHeight = Integer.parseInt(matcher.group(2));
+            gridWidth = Integer.parseInt(matcher.group(3));
+
+            while ((currentLine = br.readLine()) != null) {
+                if (currentLine.length() != 0) {
+                    if (currentLine.length() < gridWidth) {
+                        return false;
+                    }
+                    mapData.add(currentLine);
+                }
+            }
+
+            if (mapData.size() < gridHeight) {
+                return false;
+            }
+
+            stillObjects = new Entity[gridHeight][gridWidth];
+
+            processMapData();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
+        return true;
     }
-    return false;
-  }
 
-  private void loadData() {
-    for (int i = 0; i < mapData.size(); i++) {
-      String texture = mapData.get(i);
-      for (int j = 0; j < texture.length(); j++) {
-        switch (texture.charAt(j)) {
-          case '#':
-            CollidableObject wall = new Wall(j, i);
-            //      solidTiles[j][i] = true;
-            stillObjects.add(wall);
-            break;
-          case '1':
-            MovableObject enemy = new Ballom(j, i);
-            animateObjects.add(enemy);
-            stillObjects.add(new Grass(j, i));
-            break;
-          default:
-            Entity object = new Grass(j, i);
-            stillObjects.add(object);
-            break;
+    private void processMapData() {
+        for (int i = 0; i < gridHeight; i++) {
+            String texture = mapData.get(i);
+            for (int j = 0; j < gridWidth; j++) {
+                switch (texture.charAt(j)) {
+                    case '#':
+                        stillObjects[i][j] = new Wall(this, j, i);
+                        break;
+                    case '1':
+                        animateObjects.add(new Ballom(this, j, i));
+                        stillObjects[i][j] = new Grass(this, j, i);
+                        break;
+                    case '*':
+                        stillObjects[i][j] = new BrickWall(this, j, i);
+                        break;
+                    default:
+                        stillObjects[i][j] = new Grass(this, j, i);
+                        break;
+                }
+            }
         }
-      }
     }
-  }
 
-  public void addCamera() {
-    for (Entity e : stillObjects) {
-      e.setCamera(camera);
+    public int getRealWidth() {
+        return gridWidth * Sprite.SCALED_SIZE;
     }
-    for (Entity e : animateObjects) {
-      e.setCamera(camera);
+
+    public int getRealHeight() {
+        return gridHeight * Sprite.SCALED_SIZE;
     }
-  }
 
-  public int getGridWidth() {
-    return gridWidth;
-  }
-
-  public int getGridHeight() {
-    return gridHeight;
-  }
-
-  public int getRealWidth() {
-    return gridWidth * Sprite.SCALED_SIZE;
-  }
-
-  public int getRealHeight() {
-    return gridHeight * Sprite.SCALED_SIZE;
-  }
-
-  /** This is just for testing also. */
-  public void testMap() {
-    for (String texture : mapData) {
-      System.out.println(texture);
+    /**
+     * This is just for testing also.
+     */
+    public void testMap() {
+        for (String texture : mapData) {
+            System.out.println(texture);
+        }
     }
-  }
 
-  public void removeFlames(int numberOfFlames) {
-    for (int i = 0; i < numberOfFlames; i++) {
-      flames.remove(i);
+    public Entity getStillObjectAt(int x, int y) {
+        if (x < 0 || y < 0 || x >= stillObjects[0].length || y >= stillObjects.length) {
+            return null;
+        }
+        return stillObjects[y][x];
     }
-  }
 
-  public List<MovableObject> getAnimateObjects() {
-    return this.animateObjects;
-  }
-
-  public List<Entity> getStillObjects() {
-    return this.stillObjects;
-  }
+    public void setStillObjectAt(Entity object, int x, int y) {
+        if (x < 0 || y < 0 || x >= stillObjects[0].length || y >= stillObjects.length || object == null) {
+            return;
+        }
+        stillObjects[y][x] = object;
+    }
 
 
-  @Override
-  public void update() {
-    //        if(stillObjects.size()>0)
-    //        stillObjects.removeIf(Entity::isDestroyed);
-    //        if(animateObjects.size()>0)
-    //        animateObjects.removeIf(Entity::isDestroyed);
-    camera.updateCamera();
-  }
+    @Override
+    public void update() {
+        for (int i = 0; i < gridHeight; i++) {
+            for (int j = 0; j < gridWidth; j++) {
+                if (stillObjects[i][j].isDestroyed()) {
+                    Entity grass = new Grass(this, j, i);
+                    grass.setCamera(camera);
+                    stillObjects[i][j] = grass;
+                }
+            }
+        }
+        if (animateObjects.size() > 0) {
+            animateObjects.removeIf(Entity::isDestroyed);
+        }
 
-  @Override
-  public void render(GraphicsContext gc) {
-    gc.setFill(Color.rgb(173, 173, 173));
-    gc.fillRect(0, 0, BombermanGame.canvas.getWidth(), BombermanGame.canvas.getHeight());
+        animateObjects.forEach(Entity::update);
+        bomberman.update();
+        camera.updateCamera();
+    }
 
-    stillObjects.forEach(g -> g.render(gc));
-    animateObjects.forEach(g -> g.render(gc));
-    textPoints.render(gc);
-    textLives.render(gc);
-    textTime.render(gc);
-  }
+    @Override
+    public void render(GraphicsContext gc) {
+        gc.setFill(Color.rgb(173, 173, 173));
+        gc.fillRect(0, 0, BombermanGame.canvas.getWidth(), BombermanGame.canvas.getHeight());
+
+        for (Entity[] arr : stillObjects) {
+            for (Entity e : arr) {
+                e.render(gc);
+            }
+        }
+
+        animateObjects.forEach(g -> g.render(gc));
+        bomberman.render(gc);
+System.out.printf("pos: %f %f\n", bomberman.getGridX(), bomberman.getGridY());
+        textPoints.render(gc);
+        textLives.render(gc);
+        textTime.render(gc);
+    }
 }
