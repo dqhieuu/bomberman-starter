@@ -8,14 +8,20 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
+import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.stillobjects.Bomb;
 import uet.oop.bomberman.entities.UserControlledObject;
+import uet.oop.bomberman.entities.stillobjects.Grass;
+import uet.oop.bomberman.entities.stillobjects.Portal;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUp;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpBomb;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpFlame;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpSpeed;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
 import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +34,6 @@ public class Bomber extends UserControlledObject {
     protected int bombBlastRadius;
 
     protected int bombsPlanted = 0;
-
-    private double baseSpeed = 0.05;
 
     public Bomber(GameScene scene, double x, double y) {
         super(scene, x, y, Sprite.player_right.getFxImage());
@@ -78,15 +82,29 @@ public class Bomber extends UserControlledObject {
 
         bombBlastRadius = 2;
         bombsCanPlant = 1;
-//        powerUpFire();        powerUpFire();        powerUpFire();        powerUpFire();
-        powerUpBomb();        powerUpBomb();        powerUpBomb();        powerUpBomb();
-//        powerUpSpeed();        powerUpSpeed();        powerUpSpeed();        powerUpSpeed();        powerUpSpeed();
+        baseSpeed = 0.05;
     }
 
     @Override
     public void update() {
-        super.update();
-        updatePosition();
+        if (!isDestroyed()) {
+            super.update();
+            updatePosition();
+            Entity objectStandingOn = ((MainGameScene) sceneContext)
+                    .getStillObjectAt((int) Math.round(gridX), (int) Math.round(gridY));
+            if (objectStandingOn != null) {
+                if (objectStandingOn instanceof PowerUp) {
+                    if (objectStandingOn instanceof PowerUpBomb) {
+                        powerUpBomb();
+                    } else if (objectStandingOn instanceof PowerUpFlame) {
+                        powerUpFlame();
+                    } else if (objectStandingOn instanceof PowerUpSpeed) {
+                        powerUpSpeed();
+                    }
+                    objectStandingOn.destroy();
+                }
+            }
+        }
     }
 
     private void setBombsCanPlant(int bombsCanPlant) {
@@ -108,17 +126,22 @@ public class Bomber extends UserControlledObject {
     public void plantBomb() {
         int bombX = (int) Math.round(gridX);
         int bombY = (int) Math.round(gridY);
+        Entity replaceObject = ((MainGameScene) sceneContext).getStillObjectAt(bombX, bombY);
 
-        if (bombsPlanted >= bombsCanPlant ||
-                ((MainGameScene) sceneContext).getStillObjectAt(bombX, bombY) instanceof Bomb) {
+        if (bombsPlanted >= bombsCanPlant || !(replaceObject instanceof Grass)) {
             return;
         }
+
+
         bombsPlanted++;
 
         Bomb newBomb = new Bomb(sceneContext, bombX, bombY, bombBlastRadius, this);
         newBomb.setCamera(camera);
 
-        ((MainGameScene) sceneContext).setStillObjectAt(newBomb, bombX, bombY);
+        ((MainGameScene) sceneContext).
+
+                setStillObjectAt(newBomb, bombX, bombY);
+
     }
 
     public void bindInput(Scene currentScene) {
@@ -270,7 +293,7 @@ public class Bomber extends UserControlledObject {
         bombsCanPlant++;
     }
 
-    public void powerUpFire() {
+    public void powerUpFlame() {
         if (bombBlastRadius < 5) {
             bombBlastRadius++;
         }

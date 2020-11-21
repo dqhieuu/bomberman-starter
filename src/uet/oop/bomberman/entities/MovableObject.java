@@ -1,6 +1,7 @@
 package uet.oop.bomberman.entities;
 
 import javafx.scene.image.Image;
+import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.misc.Direction;
 import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
@@ -11,7 +12,10 @@ public abstract class MovableObject extends CollidableObject {
 
     protected static final double EPSILON = 0.0001;
 
-    protected static final double SLIDING_CONSTANT = 0.25;
+    protected static final double SLIDING_CONSTANT = 1.0;
+    protected static final double IGNORE_COLLISION_DISTANCE = 0.85;
+
+    protected double baseSpeed = 0.05;
 
     public MovableObject(GameScene scene, double x, double y, Image img) {
         super(scene, x,y,img);
@@ -27,7 +31,7 @@ public abstract class MovableObject extends CollidableObject {
         this.facingDirection = facingDirection;
     }
 
-    public boolean movable() {
+    protected boolean movable() {
         double offsetX;
         double offsetY;
         int corY = (int) gridY;
@@ -38,7 +42,7 @@ public abstract class MovableObject extends CollidableObject {
                 if (offsetY == 0) {
                     Entity object = ((MainGameScene)sceneContext).getStillObjectAt(corX + 1, corY);
                     if (object instanceof CollidableObject && ((CollidableObject) object).isSolid()) {
-                        return Math.abs(gridX - object.gridX) < 0.8501;
+                        return Math.abs(gridX - object.gridX) < IGNORE_COLLISION_DISTANCE;
                     }
                 } else if (offsetY <= 0.5) {
                     Entity firstObject = ((MainGameScene)sceneContext).getStillObjectAt(corX + 1, corY);
@@ -47,7 +51,7 @@ public abstract class MovableObject extends CollidableObject {
                         return false;
                     }
                     if (secondObject instanceof CollidableObject && ((CollidableObject) secondObject).isSolid()) {
-                        gridY -= offsetY * SLIDING_CONSTANT;
+                        gridY -= baseSpeed * BombermanGame.gameSpeed *  SLIDING_CONSTANT;
                     }
 
                 } else {
@@ -57,7 +61,7 @@ public abstract class MovableObject extends CollidableObject {
                         return false;
                     }
                     if (firstObject instanceof CollidableObject && ((CollidableObject) firstObject).isSolid()) {
-                        gridY += (1 - offsetY) * SLIDING_CONSTANT;
+                        gridY += baseSpeed * BombermanGame.gameSpeed *  SLIDING_CONSTANT;
                     }
                 }
                 break;
@@ -66,7 +70,7 @@ public abstract class MovableObject extends CollidableObject {
                 if (offsetY == 0) {
                     Entity object = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY);
                     if (object instanceof CollidableObject && ((CollidableObject) object).isSolid()) {
-                        return Math.abs(gridX - object.gridX) < 0.8501;
+                        return Math.abs(gridX - object.gridX) < IGNORE_COLLISION_DISTANCE;
                     }
                 } else if (offsetY <= 0.5) {
                     Entity firstObject = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY);
@@ -75,7 +79,7 @@ public abstract class MovableObject extends CollidableObject {
                         return false;
                     }
                     if (secondObject instanceof CollidableObject && ((CollidableObject) secondObject).isSolid()) {
-                        gridY -= offsetY * SLIDING_CONSTANT;
+                        gridY -= baseSpeed * BombermanGame.gameSpeed *  SLIDING_CONSTANT;
                     }
                 } else {
                     Entity firstObject = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY);
@@ -84,7 +88,7 @@ public abstract class MovableObject extends CollidableObject {
                         return false;
                     }
                     if (firstObject instanceof CollidableObject && ((CollidableObject) firstObject).isSolid()) {
-                        gridY += (1 - offsetY) * SLIDING_CONSTANT;
+                        gridY += baseSpeed * BombermanGame.gameSpeed *  SLIDING_CONSTANT;
                     }
                 }
                 break;
@@ -93,7 +97,7 @@ public abstract class MovableObject extends CollidableObject {
                 if (offsetX == 0) {
                     Entity object = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY + 1);
                     if (object instanceof CollidableObject && ((CollidableObject) object).isSolid()) {
-                        return Math.abs(gridY - object.gridY) < 0.8501;
+                        return Math.abs(gridY - object.gridY) < IGNORE_COLLISION_DISTANCE;
                     }
                 } else if (offsetX <= 0.5) {
                     Entity firstObject = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY + 1);
@@ -102,7 +106,7 @@ public abstract class MovableObject extends CollidableObject {
                         return false;
                     }
                     if (secondObject instanceof CollidableObject && ((CollidableObject) secondObject).isSolid()) {
-                        gridX -= offsetX * SLIDING_CONSTANT;
+                        gridX -= baseSpeed * BombermanGame.gameSpeed *  SLIDING_CONSTANT;
                     }
                 } else {
                     Entity firstObject = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY + 1);
@@ -111,7 +115,7 @@ public abstract class MovableObject extends CollidableObject {
                         return false;
                     }
                     if (firstObject instanceof CollidableObject && ((CollidableObject) firstObject).isSolid()) {
-                        gridX += (1 - offsetX) * SLIDING_CONSTANT;
+                        gridX += baseSpeed * BombermanGame.gameSpeed *  SLIDING_CONSTANT;
                     }
                 }
                 break;
@@ -120,7 +124,7 @@ public abstract class MovableObject extends CollidableObject {
                 if (offsetX == 0) {
                     Entity object = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY);
                     if (object instanceof CollidableObject && ((CollidableObject) object).isSolid()) {
-                        return Math.abs(gridY - object.gridY) < 0.8501;
+                        return Math.abs(gridY - object.gridY) < IGNORE_COLLISION_DISTANCE;
                     }
                 } else if (offsetX <= 0.5) {
                     Entity firstObject = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY);
@@ -129,7 +133,7 @@ public abstract class MovableObject extends CollidableObject {
                         return false;
                     }
                     if (secondObject instanceof CollidableObject && ((CollidableObject) secondObject).isSolid()) {
-                        gridX -= offsetX * SLIDING_CONSTANT;
+                        gridX -= baseSpeed * BombermanGame.gameSpeed *  SLIDING_CONSTANT;
                     }
                 } else {
                     Entity firstObject = ((MainGameScene)sceneContext).getStillObjectAt(corX, corY);
@@ -139,7 +143,7 @@ public abstract class MovableObject extends CollidableObject {
                     }
 
                     if (firstObject instanceof CollidableObject && ((CollidableObject) firstObject).isSolid()) {
-                        gridX += (1 - offsetX) * SLIDING_CONSTANT;
+                        gridX += baseSpeed * BombermanGame.gameSpeed * SLIDING_CONSTANT;
                     }
                 }
                 break;
@@ -150,10 +154,11 @@ public abstract class MovableObject extends CollidableObject {
     public void roundGridCoords() {
         int roundedX = (int)Math.round(gridX);
         int roundedY = (int)Math.round(gridY);
-        if(Math.abs(roundedX-gridX)<=EPSILON) {
+        double roundRange = (baseSpeed * BombermanGame.gameSpeed * SLIDING_CONSTANT)/2 + EPSILON;
+        if(Math.abs(roundedX-gridX)<=roundRange) {
             gridX = roundedX;
         }
-        if(Math.abs(roundedY-gridY)<=EPSILON) {
+        if(Math.abs(roundedY-gridY)<=roundRange) {
             gridY = roundedY;
         }
     }

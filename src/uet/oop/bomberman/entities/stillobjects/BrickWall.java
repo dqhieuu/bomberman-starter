@@ -8,8 +8,11 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
+import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUp;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.scenes.GameScene;
+import uet.oop.bomberman.scenes.MainGameScene;
 
 public class BrickWall extends CollidableObject {
     private static final Image[] destroyedBrickWall = {
@@ -20,9 +23,15 @@ public class BrickWall extends CollidableObject {
 
     private int spriteIndex = 0;
 
+    Entity objectUnderneath;
+
     public BrickWall(GameScene scene, double x, double y) {
         super(scene, x, y, Sprite.brick.getFxImage());
         isSolid = true;
+    }
+
+    public void addObjectUnderneath(Entity object) {
+        objectUnderneath = object;
     }
 
     @Override
@@ -30,7 +39,8 @@ public class BrickWall extends CollidableObject {
 
     }
 
-    @Override public void destroy() {
+    @Override
+    public void destroy() {
         setCurrentImg(destroyedBrickWall[0]);
         Animation spriteChanger =
                 new Timeline(
@@ -38,10 +48,17 @@ public class BrickWall extends CollidableObject {
                                 Duration.millis(100),
                                 e -> {
                                     spriteIndex++;
-                                    if(spriteIndex < destroyedBrickWall.length) {
+                                    if (spriteIndex < destroyedBrickWall.length) {
                                         setCurrentImg(destroyedBrickWall[spriteIndex]);
                                     } else {
-                                        exists = false;
+                                        super.destroy();
+                                        if (objectUnderneath != null) {
+                                            if(objectUnderneath instanceof PowerUp) {
+                                                ((PowerUp) objectUnderneath).activateDespawnTimer();
+                                            }
+                                            objectUnderneath.setCamera(camera);
+                                            ((MainGameScene) sceneContext).setStillObjectAt(objectUnderneath, (int) gridX, (int) gridY);
+                                        }
                                     }
                                 }));
         spriteChanger.setCycleCount(destroyedBrickWall.length);
@@ -52,10 +69,17 @@ public class BrickWall extends CollidableObject {
     public void render(GraphicsContext gc) {
         if (exists && currentImg != null) {
             if (camera != null) {
-                gc.drawImage(
-                        Sprite.grass.getFxImage(),
-                        getRealX() - camera.getX(),
-                        getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
+                if (objectUnderneath == null) {
+                    gc.drawImage(
+                            Sprite.grass.getFxImage(),
+                            getRealX() - camera.getX(),
+                            getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
+                } else {
+                    gc.drawImage(
+                            objectUnderneath.getCurrentImg(),
+                            getRealX() - camera.getX(),
+                            getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
+                }
                 gc.drawImage(
                         currentImg,
                         getRealX() - camera.getX(),

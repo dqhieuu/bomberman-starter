@@ -13,6 +13,9 @@ import uet.oop.bomberman.entities.MovableObject;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.entities.stillobjects.*;
 import uet.oop.bomberman.entities.Text;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpBomb;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpFlame;
+import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpSpeed;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.utils.ErrorDialog;
 import uet.oop.bomberman.utils.Camera;
@@ -151,9 +154,31 @@ public class MainGameScene implements GameScene {
         for (int i = 0; i < gridHeight; i++) {
             String texture = mapData.get(i);
             for (int j = 0; j < gridWidth; j++) {
+                BrickWall tempBrick;
+
                 switch (texture.charAt(j)) {
                     case '#':
                         stillObjects[i][j] = new Wall(this, j, i);
+                        break;
+                    case 'b':
+                        tempBrick = new BrickWall(this, j, i);
+                        tempBrick.addObjectUnderneath(new PowerUpBomb(this, j, i));
+                        stillObjects[i][j] = tempBrick;
+                        break;
+                    case 'f':
+                        tempBrick = new BrickWall(this, j, i);
+                        tempBrick.addObjectUnderneath(new PowerUpFlame(this, j, i));
+                        stillObjects[i][j] = tempBrick;
+                        break;
+                    case 's':
+                        tempBrick = new BrickWall(this, j, i);
+                        tempBrick.addObjectUnderneath(new PowerUpSpeed(this, j, i));
+                        stillObjects[i][j] = tempBrick;
+                        break;
+                    case 'x':
+                        tempBrick = new BrickWall(this, j, i);
+                        tempBrick.addObjectUnderneath(new Portal(this, j, i));
+                        stillObjects[i][j] = tempBrick;
                         break;
                     case '1':
                         animateObjects.add(new Ballom(this, j, i));
@@ -201,6 +226,10 @@ public class MainGameScene implements GameScene {
         stillObjects[y][x] = object;
     }
 
+    public void addPoints(int points) {
+        playerPoints += points;
+        textPoints.setText(String.valueOf(playerPoints));
+    }
 
     @Override
     public void update() {
@@ -235,7 +264,7 @@ public class MainGameScene implements GameScene {
 
         animateObjects.forEach(g -> g.render(gc));
         bomberman.render(gc);
-System.out.printf("pos: %f %f\n", bomberman.getGridX(), bomberman.getGridY());
+        System.out.printf("pos: %f %f\n", bomberman.getGridX(), bomberman.getGridY());
         textPoints.render(gc);
         textLives.render(gc);
         textTime.render(gc);

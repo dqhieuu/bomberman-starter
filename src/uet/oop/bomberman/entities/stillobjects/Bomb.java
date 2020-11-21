@@ -11,11 +11,8 @@ import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.misc.Direction;
 import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
-
-import java.util.List;
 
 public class Bomb extends CollidableObject {
 

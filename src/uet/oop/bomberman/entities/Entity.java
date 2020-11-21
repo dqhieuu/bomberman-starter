@@ -94,6 +94,10 @@ public abstract class Entity {
     this.currentImg = img;
   }
 
+  public Image getCurrentImg() {
+    return currentImg;
+  }
+
   public void setCamera(Camera camera) {
     this.camera = camera;
   }
