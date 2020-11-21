@@ -9,22 +9,28 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import uet.oop.bomberman.scenes.GameScene;
+import uet.oop.bomberman.scenes.IntermissionScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.awt.*;
+import java.util.logging.Level;
 
 public class BombermanGame extends Application {
     public static final int CANVAS_OFFSET_Y = 64;
     public static final int CANVAS_WIDTH = 512;
     public static final int CANVAS_HEIGHT = 480;
     public static final double TARGET_FRAME_RATE = 60.0;
+    public static final String[] levelPaths = {
+            "/levels/Level1.txt",
+    };
 
     public static int refreshRate;
     public static double gameSpeed;
 
     public static Font pixelFont;
 
-    public static MainGameScene currentGameScene;
+    public static GameScene currentGameScene;
 
     public static Stage primaryStage;
     public static GraphicsContext gc;
@@ -68,7 +74,7 @@ public class BombermanGame extends Application {
         stage.setResizable(false);
 
         // Load game scene mac dinh
-        currentGameScene = new MainGameScene("/levels/Level1.txt");
+        currentGameScene = new IntermissionScene(IntermissionScene.IntermissionType.FIRST_LEVEL);
         stage.show();
 
         // Do fps

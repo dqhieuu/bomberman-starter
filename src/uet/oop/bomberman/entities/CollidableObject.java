@@ -23,18 +23,6 @@ public abstract class CollidableObject extends Entity {
     }
 
     public boolean isColliding(CollidableObject other) {
-        if (!other.isSolid()) {
-            return false;
-        }
-        Rectangle otherCollisionBox =
-                new Rectangle(other.gridX, other.gridY,
-                        other.getEntityWidth(),
-                        other.getEntityHeight());
-        Rectangle thisCollisionBox =
-                new Rectangle(this.gridX, this.gridY,
-                        this.getEntityWidth(),
-                        this.getEntityHeight());
-        Shape checker = Shape.intersect(otherCollisionBox, thisCollisionBox);
-        return checker.getBoundsInLocal().getWidth() != -1 || checker.getBoundsInLocal().getHeight() != -1;
+        return Math.abs(this.gridX - other.gridX) < 0.6 && Math.abs(this.gridY - other.gridY) < 0.6;
     }
 }

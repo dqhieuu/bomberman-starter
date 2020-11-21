@@ -5,6 +5,7 @@ import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.scenes.GameScene;
+import uet.oop.bomberman.scenes.MainGameScene;
 
 public class Portal extends CollidableObject {
     public Portal(GameScene scene, double x, double y) {
@@ -12,8 +13,12 @@ public class Portal extends CollidableObject {
     }
 
     @Override
-    public void update() {
+    public void update() {}
 
+    public void checkLevelFinished() {
+        if(((MainGameScene)sceneContext).getEnemies().size() == 0) {
+            ((MainGameScene)sceneContext).setStageCompleted();
+        }
     }
 
     @Override

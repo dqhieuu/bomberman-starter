@@ -13,6 +13,7 @@ import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
+import uet.oop.bomberman.utils.GameMediaPlayer;
 
 public class Bomb extends CollidableObject {
 
@@ -65,7 +66,10 @@ public class Bomb extends CollidableObject {
                                 }));
         spriteChanger.setCycleCount(Animation.INDEFINITE);
         spriteChanger.play();
-        Animation countdown = new Timeline(new KeyFrame(Duration.seconds(3), e -> destroy()));
+        Animation countdown = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+            spriteChanger.stop();
+            destroy();
+        }));
         countdown.play();
     }
 
@@ -167,9 +171,10 @@ public class Bomb extends CollidableObject {
     @Override
     public void destroy() {
         if (!isDestroyed()) {
+            GameMediaPlayer.explosion.play();
+            super.destroy();
             bombermanContext.retrieveBomb();
             setTilesOnFire();
-            super.destroy();
         }
     }
 
