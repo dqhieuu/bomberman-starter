@@ -9,4 +9,9 @@ public class Mob extends AIControlledObject {
   public Mob(GameScene scene, double x, double y, Image img) {
     super(scene, x, y, img);
   }
+
+  @Override
+  public void autoMove() {
+
+  }
 }

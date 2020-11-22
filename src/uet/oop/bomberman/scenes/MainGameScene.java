@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.mobileobjects.Ballom;
+import uet.oop.bomberman.entities.mobileobjects.Balloon;
 import uet.oop.bomberman.entities.MovableObject;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.entities.stillobjects.*;
@@ -132,7 +132,7 @@ public class MainGameScene implements GameScene {
             stillObjects[i][j] = tempBrick;
             break;
           case '1':
-            enemies.add(new Ballom(this, j, i));
+            enemies.add(new Balloon(this, j, i));
             stillObjects[i][j] = new Grass(this, j, i);
             break;
           case '*':

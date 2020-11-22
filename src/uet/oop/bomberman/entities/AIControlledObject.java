@@ -7,4 +7,6 @@ public abstract class AIControlledObject extends MovableObject {
     public AIControlledObject(GameScene scene, double x, double y, Image img) {
         super(scene, x, y, img);
     }
+
+    public abstract void autoMove();
 }
