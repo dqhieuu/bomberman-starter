@@ -137,6 +137,8 @@ public class Bomber extends UserControlledObject {
     newBomb.setCamera(camera);
 
     ((MainGameScene) sceneContext).setStillObjectAt(newBomb, bombX, bombY);
+
+    GameMediaPlayer.plantBomb.play();
   }
 
   public void bindInput(Scene currentScene) {

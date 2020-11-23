@@ -37,6 +37,7 @@ public class Balloon extends AIControlledObject {
         remove = false;
         isMoving = true;
         isDead = false;
+        baseSpeed = 0.03;
         if (canMoveDown()) {
             currentDirection = Direction.SOUTH;
         } else if (canMoveUp()) {

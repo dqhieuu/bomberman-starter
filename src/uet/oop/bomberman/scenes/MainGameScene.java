@@ -217,6 +217,9 @@ public class MainGameScene implements GameScene {
         }
         if (enemies.size() > 0) {
           enemies.removeIf(Entity::isDestroyed);
+          if (enemies.size() == 0) {
+            GameMediaPlayer.portalOpen.play();
+          }
         }
 
         enemies.forEach(Entity::update);

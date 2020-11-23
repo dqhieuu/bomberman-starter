@@ -18,6 +18,10 @@ public class GameMediaPlayer {
           new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/walk.wav").toString());
   public static final AudioClip powerUp =
           new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/powerup.wav").toString());
+  public static final AudioClip portalOpen =
+          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/portal_open.wav").toString());
+  public static final AudioClip plantBomb =
+          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/plant_bomb.wav").toString());
 
   private static MediaPlayer mediaPlayer = null;
 
