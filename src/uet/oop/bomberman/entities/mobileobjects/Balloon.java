@@ -115,7 +115,11 @@ public class Balloon extends AIControlledObject {
             }
             autoMove();
             if (!isMoving) {
-                randomGenerator++;
+                if (randomGenerator >= 10003) {
+                    randomGenerator = 0;
+                } else {
+                    randomGenerator++;
+                }
             }
             Entity objectStandingOn = ((MainGameScene) sceneContext)
                     .getStillObjectAt((int) Math.round(gridX), (int) Math.round(gridY));
