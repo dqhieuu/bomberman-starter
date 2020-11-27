@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.scenes.GameScene;
-import uet.oop.bomberman.utils.Camera;
+import uet.oop.bomberman.graphics.Camera;
 
 public abstract class Entity {
   protected double gridX;

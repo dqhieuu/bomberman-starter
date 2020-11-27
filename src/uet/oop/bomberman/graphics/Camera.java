@@ -1,4 +1,4 @@
-package uet.oop.bomberman.utils;
+package uet.oop.bomberman.graphics;
 
 import uet.oop.bomberman.entities.Entity;
 

@@ -1,7 +1,5 @@
 package uet.oop.bomberman.entities.stillobjects;
 
-import javafx.scene.canvas.GraphicsContext;
-import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.scenes.GameScene;

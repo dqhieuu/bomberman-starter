@@ -13,15 +13,15 @@ public class GameMediaPlayer {
   public static final String ENDING = "/background_music/ending.mp3";
 
   public static final AudioClip explosion =
-      new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/explosion.wav").toString());
+      new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/explosion.wav").toExternalForm());
   public static final AudioClip walk =
-          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/walk.wav").toString());
+          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/walk.wav").toExternalForm());
   public static final AudioClip powerUp =
-          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/powerup.wav").toString());
+          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/powerup.wav").toExternalForm());
   public static final AudioClip portalOpen =
-          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/portal_open.wav").toString());
+          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/portal_open.wav").toExternalForm());
   public static final AudioClip plantBomb =
-          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/plant_bomb.wav").toString());
+          new AudioClip(GameMediaPlayer.class.getResource("/sound_effects/plant_bomb.wav").toExternalForm());
 
   private static MediaPlayer mediaPlayer = null;
 
@@ -39,7 +39,7 @@ public class GameMediaPlayer {
       releasePlayer();
     }
 
-    Media mp3 = new Media(GameMediaPlayer.class.getResource(path).toString());
+    Media mp3 = new Media(GameMediaPlayer.class.getResource(path).toExternalForm());
     mediaPlayer = new MediaPlayer(mp3);
 
     if (repeatForever) {

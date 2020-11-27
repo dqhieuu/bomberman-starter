@@ -20,8 +20,6 @@ public class Bomb extends CollidableObject {
     protected Bomber bombermanContext;
     protected int blastRadius;
 
-    protected boolean hasExploded;
-
     protected int spriteIndex;
     protected boolean isAnimationReverse = false;
 
@@ -166,6 +164,10 @@ public class Bomb extends CollidableObject {
                 addFlameDown(intX, intY, blastRadius);
             }
         }
+    }
+
+    public int getBlastRadius() {
+        return blastRadius;
     }
 
     @Override

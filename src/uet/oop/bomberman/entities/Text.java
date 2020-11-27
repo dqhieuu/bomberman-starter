@@ -2,7 +2,6 @@ package uet.oop.bomberman.entities;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import uet.oop.bomberman.scenes.GameScene;
 
 public class Text extends Entity {

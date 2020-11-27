@@ -36,7 +36,7 @@ public class IntermissionScene implements GameScene {
   private List<String> mapData;
 
   public IntermissionScene(IntermissionType intermissionType) {
-    intermissionText = new Text(this, 6, 8, false);
+    intermissionText = new Text(this, 5.5, 8, false);
     if (intermissionType == IntermissionType.FIRST_LEVEL
         || intermissionType == IntermissionType.NEXT_LEVEL
         || intermissionType == IntermissionType.REPLAY_LEVEL) {
@@ -71,8 +71,8 @@ public class IntermissionScene implements GameScene {
                 new KeyFrame(
                     Duration.seconds(3),
                     e ->
-                        BombermanGame.currentGameScene =
-                            new MainGameScene(mapWidth, mapHeight, mapData)));
+                        BombermanGame.setCurrentGameScene(
+                            new MainGameScene(mapWidth, mapHeight, mapData))));
         countdown.play();
       }
     } else if (intermissionType == IntermissionType.GAME_OVER) {

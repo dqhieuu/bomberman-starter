@@ -9,7 +9,6 @@ import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.misc.Direction;
 import uet.oop.bomberman.scenes.GameScene;
 
 import java.util.HashMap;

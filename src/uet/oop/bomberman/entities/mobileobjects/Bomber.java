@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
-import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.MovableObject;
 import uet.oop.bomberman.entities.stillobjects.Bomb;
@@ -41,7 +40,7 @@ public class Bomber extends UserControlledObject {
 
   protected int bombsPlanted = 0;
 
-  private boolean isDead = false;
+
 
   public Bomber(GameScene scene, double x, double y) {
     super(scene, x, y, Sprite.player_right.getFxImage());
@@ -168,33 +167,32 @@ public class Bomber extends UserControlledObject {
           }
         });
 
-    BombermanGame.primaryStage
-        .getScene()
-        .setOnKeyReleased(
-            keyEvent -> {
-              KeyCode key = keyEvent.getCode();
-              switch (key) {
-                case LEFT:
-                case A:
-                  movePad.left = false;
-                  break;
-                case RIGHT:
-                case D:
-                  movePad.right = false;
-                  break;
-                case UP:
-                case W:
-                  movePad.up = false;
-                  break;
-                case DOWN:
-                case S:
-                  movePad.down = false;
-                  break;
-              }
-            });
+    currentScene.setOnKeyReleased(
+        keyEvent -> {
+          KeyCode key = keyEvent.getCode();
+          switch (key) {
+            case LEFT:
+            case A:
+              movePad.left = false;
+              break;
+            case RIGHT:
+            case D:
+              movePad.right = false;
+              break;
+            case UP:
+            case W:
+              movePad.up = false;
+              break;
+            case DOWN:
+            case S:
+              movePad.down = false;
+              break;
+          }
+        });
   }
 
-  public void moveLeft() {
+  public boolean moveLeft() {
+    boolean rt = super.moveLeft();
     if (facingDirection != Direction.WEST) {
       setFacingDirection(Direction.WEST);
       spriteIndex = 0;
@@ -203,14 +201,11 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
-
-    gridX -= baseSpeed * BombermanGame.gameSpeed;
-    if (!movable()) {
-      gridX += baseSpeed * BombermanGame.gameSpeed;
-    }
+    return rt;
   }
 
-  public void moveRight() {
+  public boolean moveRight() {
+    boolean rt = super.moveRight();
     if (facingDirection != Direction.EAST) {
       setFacingDirection(Direction.EAST);
       spriteIndex = 0;
@@ -219,14 +214,11 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
-
-    gridX += baseSpeed * BombermanGame.gameSpeed;
-    if (!movable()) {
-      gridX -= baseSpeed * BombermanGame.gameSpeed;
-    }
+    return rt;
   }
 
-  public void moveUp() {
+  public boolean moveUp() {
+    boolean rt = super.moveUp();
     if (facingDirection != Direction.NORTH) {
       setFacingDirection(Direction.NORTH);
       spriteIndex = 0;
@@ -235,14 +227,11 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
-
-    gridY -= baseSpeed * BombermanGame.gameSpeed;
-    if (!movable()) {
-      gridY += baseSpeed * BombermanGame.gameSpeed;
-    }
+    return rt;
   }
 
-  public void moveDown() {
+  public boolean moveDown() {
+    boolean rt = super.moveDown();
     if (facingDirection != Direction.SOUTH) {
       setFacingDirection(Direction.SOUTH);
       spriteIndex = 0;
@@ -251,11 +240,7 @@ public class Bomber extends UserControlledObject {
     if (spriteChanger.getCurrentRate() == 0.0) {
       spriteChanger.play();
     }
-
-    gridY += baseSpeed * BombermanGame.gameSpeed;
-    if (!movable()) {
-      gridY -= baseSpeed * BombermanGame.gameSpeed;
-    }
+    return rt;
   }
 
   /** Check if bomberman can move to the destined location. */
@@ -347,9 +332,10 @@ public class Bomber extends UserControlledObject {
           ((Portal) objectStandingOn).checkLevelFinished();
         }
       }
+
       List<MovableObject> enemies = ((MainGameScene) sceneContext).getEnemies();
       for (MovableObject enemy : enemies) {
-        if (isColliding(enemy)) {
+        if (isColliding(enemy) && !enemy.isDead()) {
           destroy();
           break;
         }
