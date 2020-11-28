@@ -20,7 +20,7 @@ public class BombermanGame extends Application {
   public static final int CANVAS_HEIGHT = 480;
   public static final double TARGET_FRAME_RATE = 60.0;
   public static final String[] levelPaths = {
-    "/levels/Level1.txt",
+    "/levels/Level1.txt", "/levels/Level2.txt",
   };
 
   private static double gameSpeed;
@@ -43,7 +43,8 @@ public class BombermanGame extends Application {
   @Override
   public void init() {
     pixelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/Pixel_NES.otf"), 24);
-    int refreshRate = GraphicsEnvironment.getLocalGraphicsEnvironment()
+    int refreshRate =
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
             .getScreenDevices()[0]
             .getDisplayMode()
             .getRefreshRate();

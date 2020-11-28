@@ -30,10 +30,12 @@ public class IntermissionScene implements GameScene {
 
   private final Text intermissionText;
 
+  private String levelLabel;
   private int mapWidth;
   private int mapHeight;
-  private String levelLabel;
   private List<String> mapData;
+  private int bomberX;
+  private int bomberY;
 
   public IntermissionScene(IntermissionType intermissionType) {
     intermissionText = new Text(this, 5.5, 8, false);
@@ -72,7 +74,7 @@ public class IntermissionScene implements GameScene {
                     Duration.seconds(3),
                     e ->
                         BombermanGame.setCurrentGameScene(
-                            new MainGameScene(mapWidth, mapHeight, mapData))));
+                            new MainGameScene(mapWidth, mapHeight, mapData, bomberX, bomberY))));
         countdown.play();
       }
     } else if (intermissionType == IntermissionType.GAME_OVER) {
@@ -111,6 +113,20 @@ public class IntermissionScene implements GameScene {
       if (mapData.size() < mapHeight) {
         return false;
       }
+
+      for (int i = 0; i < mapHeight; i++) {
+        for (int j = 0; j < mapWidth; j++) {
+          if(mapData.get(i).charAt(j) == 'p') {
+            bomberX = j;
+            bomberY = i;
+            return true;
+          }
+        }
+      }
+
+      return false;
+
+
     } catch (IOException e) {
       e.printStackTrace();
     }

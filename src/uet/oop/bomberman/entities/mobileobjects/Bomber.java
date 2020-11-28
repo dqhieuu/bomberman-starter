@@ -103,6 +103,8 @@ public class Bomber extends UserControlledObject {
     bombBlastRadius = GameVars.playerFlames;
     bombsCanPlant = GameVars.playerBombs;
     baseSpeed = GameVars.playerSpeed;
+    powerUpBomb(); powerUpBomb();
+    powerUpFlame();
   }
 
   private void setBombsCanPlant(int bombsCanPlant) {

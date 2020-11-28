@@ -11,7 +11,7 @@ import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.MovableObject;
 import uet.oop.bomberman.entities.Text;
-import uet.oop.bomberman.entities.mobileobjects.Balloon;
+import uet.oop.bomberman.entities.mobileobjects.enemies.*;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.entities.stillobjects.*;
 import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpBomb;
@@ -48,7 +48,7 @@ public class MainGameScene implements GameScene {
 
   private boolean stageCompleted = false;
 
-  public MainGameScene(int levelWidth, int levelHeight, List<String> mapData) {
+  public MainGameScene(int levelWidth, int levelHeight, List<String> mapData, int bomberX, int bomberY) {
     gridWidth = levelWidth;
     gridHeight = levelHeight;
 
@@ -59,7 +59,7 @@ public class MainGameScene implements GameScene {
 
     processMapData(mapData);
 
-    bomberman = new Bomber(this, 1, 1);
+    bomberman = new Bomber(this, bomberX, bomberY);
 
     textTime = new Text(this, 0.5, 1.5, true);
     textPoints = new Text(this, 8, 1.5, true);
@@ -137,15 +137,28 @@ public class MainGameScene implements GameScene {
             stillObjects[i][j] = tempBrick;
             break;
           case '1':
-            enemies.add(new Balloon(this, j, i));
+            enemies.add(new Balloom(this, j, i));
+            stillObjects[i][j] = new Grass(this, j, i);
+            break;
+          case '2':
+            enemies.add(new Oneal(this, j, i));
+            stillObjects[i][j] = new Grass(this, j, i);
+            break;
+          case '3':
+            enemies.add(new Doll(this, j, i));
+            stillObjects[i][j] = new Grass(this, j, i);
+            break;
+          case '4':
+            enemies.add(new Minvo(this, j, i));
+            stillObjects[i][j] = new Grass(this, j, i);
+            break;
+          case '5':
+            enemies.add(new Kondoria(this, j, i));
             stillObjects[i][j] = new Grass(this, j, i);
             break;
           case '*':
             stillObjects[i][j] = new BrickWall(this, j, i);
             break;
-            //          case 'p':
-            //            bomberman = new Bomber(this, j, i);
-            //            break;
           default:
             stillObjects[i][j] = new Grass(this, j, i);
             break;
@@ -287,7 +300,6 @@ public class MainGameScene implements GameScene {
 
     enemies.forEach(g -> g.render(gc));
     bomberman.render(gc);
-    //        System.out.printf("pos: %f %f\n", bomberman.getGridX(), bomberman.getGridY());
     textPoints.render(gc);
     textLives.render(gc);
     textTime.render(gc);
