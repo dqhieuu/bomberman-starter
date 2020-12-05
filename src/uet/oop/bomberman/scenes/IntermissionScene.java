@@ -45,7 +45,7 @@ public class IntermissionScene implements GameScene {
       GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.STAGE_START, false);
       if (intermissionType == IntermissionType.FIRST_LEVEL) {
         GameVars.currentLevel = 1;
-        GameVars.playerLives = 3;
+        GameVars.playerLives = 30;
         GameVars.playerPoints = 0;
         GameVars.playerFlames = 2;
         GameVars.playerBombs = 1;

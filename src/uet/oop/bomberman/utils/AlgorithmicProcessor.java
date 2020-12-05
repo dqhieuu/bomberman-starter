@@ -8,6 +8,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class AlgorithmicProcessor {
+  public static final int INFINITY = -1;
 
   private static boolean isValidTile(int i, int j, int[][] map) {
     return i >= 0 && j >= 0 && i < map.length && j < map[0].length;
@@ -81,6 +82,7 @@ public class AlgorithmicProcessor {
       int evadeThreshold,
       int maxEvadeWeight,
       int maxSeekWeight,
+      int BFSRange,
       int iFrom,
       int jFrom,
       int iTo,
@@ -103,6 +105,9 @@ public class AlgorithmicProcessor {
 
     while (queue.size() > 0) {
       Deque<Pair<Integer, Integer>> cur = queue.removeFirst();
+      if(BFSRange != INFINITY && cur.size() - 1 >= BFSRange) {
+        return null;
+      }
       assert cur.peekLast() != null;
       int curI = cur.peekLast().getKey();
       assert cur.peekLast() != null;

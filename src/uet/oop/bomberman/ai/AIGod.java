@@ -29,6 +29,7 @@ public class AIGod extends AIComponent {
             2,
             2,
             1,
+            AlgorithmicProcessor.INFINITY,
             vehicleY,
             vehicleX,
             bomberY,

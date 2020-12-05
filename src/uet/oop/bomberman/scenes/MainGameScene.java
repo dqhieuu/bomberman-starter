@@ -48,7 +48,8 @@ public class MainGameScene implements GameScene {
 
   private boolean stageCompleted = false;
 
-  public MainGameScene(int levelWidth, int levelHeight, List<String> mapData, int bomberX, int bomberY) {
+  public MainGameScene(
+      int levelWidth, int levelHeight, List<String> mapData, int bomberX, int bomberY) {
     gridWidth = levelWidth;
     gridHeight = levelHeight;
 
@@ -273,7 +274,8 @@ public class MainGameScene implements GameScene {
       }
       System.out.println();
       Deque<Pair<Integer, Integer>> res =
-          AlgorithmicProcessor.getPathFromGraph(outp, 1000, 1000, 1, 1, 1, 7, 9);
+          AlgorithmicProcessor.getPathFromGraph(
+              outp, 1000, 1000, 1, AlgorithmicProcessor.INFINITY, 1, 1, 7, 9);
       if (res != null) {
         System.out.printf("Length: %d\n", res.size());
         for (Pair<Integer, Integer> p : res) {
