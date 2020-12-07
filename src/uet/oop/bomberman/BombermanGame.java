@@ -11,6 +11,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.IntermissionScene;
+import uet.oop.bomberman.scenes.MainMenuScene;
 
 import java.awt.*;
 
@@ -75,7 +76,7 @@ public class BombermanGame extends Application {
     stage.setResizable(false);
 
     // Load game scene mac dinh
-    currentGameScene = new IntermissionScene(IntermissionScene.IntermissionType.FIRST_LEVEL);
+    currentGameScene = new MainMenuScene();
     stage.show();
 
     // Do fps

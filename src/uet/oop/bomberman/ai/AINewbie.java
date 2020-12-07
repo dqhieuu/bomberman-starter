@@ -4,13 +4,13 @@ import uet.oop.bomberman.entities.AIControlledObject;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 public class AINewbie extends AIComponent {
-  public AINewbie(AIControlledObject object, MainGameScene scene) {
-    super(object, scene);
-  }
+    public AINewbie(AIControlledObject object, MainGameScene scene) {
+        super(object, scene);
+    }
 
 
-  @Override
-  public void update() {
-    moveRandomly();
-  }
+    @Override
+    public void update() {
+        moveRandomly();
+    }
 }

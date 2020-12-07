@@ -45,7 +45,7 @@ public class Oneal extends Mob {
         });
     setMovingSpriteLists(sprites);
 
-    baseSpeed = 0.05;
+    baseSpeed = 0.03;
     setAIComponent(new AIGod(this, (MainGameScene) sceneContext));
   }
 

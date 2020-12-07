@@ -1,6 +1,7 @@
 package uet.oop.bomberman.utils;
 
 public class GameVars {
+  public static int highScore;
   public static int currentLevel;
   public static int playerLives;
   public static int playerPoints;
