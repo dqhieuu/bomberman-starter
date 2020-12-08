@@ -12,6 +12,7 @@ public class AIIntermediate extends AIComponent {
     private int BFSRange;
     private int evadeThreshold;
     private int maxEvadeWeight;
+    private int maxSeekWeight;
     private final int AILevel;
     private boolean chaseMode;
 
@@ -23,16 +24,19 @@ public class AIIntermediate extends AIComponent {
                 BFSRange = 10;
                 evadeThreshold = 3;
                 maxEvadeWeight = 3;
+                maxSeekWeight = 3;
                 break;
             case 2:
                 BFSRange = 5;
                 evadeThreshold = 3;
                 maxEvadeWeight = 3;
+                maxSeekWeight = 3;
                 break;
             case 3:
                 BFSRange = 5;
                 evadeThreshold = 2;
                 maxEvadeWeight = 3;
+                maxSeekWeight = 1;
                 break;
         }
         chaseMode = true;
@@ -57,7 +61,7 @@ public class AIIntermediate extends AIComponent {
                         gameScene.getStillObjectAdjacencyMatrix(),
                         evadeThreshold,
                         maxEvadeWeight,
-                        1,
+                        maxSeekWeight,
                         BFSRange,
                         vehicleY,
                         vehicleX,
