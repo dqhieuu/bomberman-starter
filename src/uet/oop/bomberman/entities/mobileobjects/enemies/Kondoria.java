@@ -2,7 +2,6 @@ package uet.oop.bomberman.entities.mobileobjects.enemies;
 
 import javafx.scene.image.Image;
 import uet.oop.bomberman.ai.AIIntermediate;
-import uet.oop.bomberman.ai.AINewbie;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
 import uet.oop.bomberman.scenes.GameScene;
@@ -46,13 +45,13 @@ public class Kondoria extends Mob {
                 });
         setMovingSpriteLists(sprites);
 
-        baseSpeed = 0.03;
+        baseSpeed = 0.04;
         setAIComponent(new AIIntermediate(this, (MainGameScene) sceneContext, 2));
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        ((MainGameScene) sceneContext).addPoints(100);
+        ((MainGameScene) sceneContext).addPoints(300);
     }
 }

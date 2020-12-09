@@ -8,107 +8,107 @@ import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.graphics.Camera;
 
 public abstract class Entity {
-  protected double gridX;
-  protected double gridY;
-  protected GameScene sceneContext;
-  protected Image currentImg;
-  protected Camera camera;
-  protected boolean exists;
+    protected double gridX;
+    protected double gridY;
+    protected GameScene sceneContext;
+    protected Image currentImg;
+    protected Camera camera;
+    protected boolean exists;
 
-  public Entity(GameScene scene, double gridX, double gridY) {
-    sceneContext = scene;
-    exists = true;
-    this.gridX = gridX;
-    this.gridY = gridY;
-  }
-
-  public Entity(GameScene scene, double gridX, double gridY, Image image) {
-    sceneContext = scene;
-    exists = true;
-    this.gridX = gridX;
-    this.gridY = gridY;
-    setCurrentImg(image);
-  }
-
-  public Entity(GameScene scene, double gridX, double gridY, Image image, Camera camera) {
-    sceneContext = scene;
-    exists = true;
-    this.gridX = gridX;
-    this.gridY = gridY;
-    setCurrentImg(image);
-    this.camera = camera;
-  }
-
-  public void render(GraphicsContext gc) {
-    if (exists && currentImg != null) {
-      if (camera != null) {
-        gc.drawImage(
-            currentImg,
-            getRealX() - camera.getX(),
-            getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
-      } else {
-        gc.drawImage(currentImg, getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
-      }
+    public Entity(GameScene scene, double gridX, double gridY) {
+        sceneContext = scene;
+        exists = true;
+        this.gridX = gridX;
+        this.gridY = gridY;
     }
-  }
 
-  public void renderAsUI(GraphicsContext gc) {
-    if (exists && currentImg != null) {
-      gc.drawImage(currentImg, getRealX(), getRealY());
+    public Entity(GameScene scene, double gridX, double gridY, Image image) {
+        sceneContext = scene;
+        exists = true;
+        this.gridX = gridX;
+        this.gridY = gridY;
+        setCurrentImg(image);
     }
-  }
 
-  public double getGridX() {
-    return gridX;
-  }
+    public Entity(GameScene scene, double gridX, double gridY, Image image, Camera camera) {
+        sceneContext = scene;
+        exists = true;
+        this.gridX = gridX;
+        this.gridY = gridY;
+        setCurrentImg(image);
+        this.camera = camera;
+    }
 
-  public double getGridY() {
-    return gridY;
-  }
+    public void render(GraphicsContext gc) {
+        if (exists && currentImg != null) {
+            if (camera != null) {
+                gc.drawImage(
+                        currentImg,
+                        getRealX() - camera.getX(),
+                        getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
+            } else {
+                gc.drawImage(currentImg, getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
+            }
+        }
+    }
 
-  public void setGridX(double gridX) {
-    this.gridX = gridX;
-  }
+    public void renderAsUI(GraphicsContext gc) {
+        if (exists && currentImg != null) {
+            gc.drawImage(currentImg, getRealX(), getRealY());
+        }
+    }
 
-  public void setGridY(double gridY) {
-    this.gridY = gridY;
-  }
+    public double getGridX() {
+        return gridX;
+    }
 
-  public int getRealX() {
-    return (int) (gridX * Sprite.SCALED_SIZE);
-  }
+    public double getGridY() {
+        return gridY;
+    }
 
-  public int getRealY() {
-    return (int) (gridY * Sprite.SCALED_SIZE);
-  }
+    public void setGridX(double gridX) {
+        this.gridX = gridX;
+    }
 
-  public double getEntityWidth() {
-    return currentImg.getWidth();
-  }
+    public void setGridY(double gridY) {
+        this.gridY = gridY;
+    }
 
-  public double getEntityHeight() {
-    return currentImg.getHeight();
-  }
+    public int getRealX() {
+        return (int) (gridX * Sprite.SCALED_SIZE);
+    }
 
-  public void setCurrentImg(Image img) {
-    this.currentImg = img;
-  }
+    public int getRealY() {
+        return (int) (gridY * Sprite.SCALED_SIZE);
+    }
 
-  public Image getCurrentImg() {
-    return currentImg;
-  }
+    public double getEntityWidth() {
+        return currentImg.getWidth();
+    }
 
-  public void setCamera(Camera camera) {
-    this.camera = camera;
-  }
+    public double getEntityHeight() {
+        return currentImg.getHeight();
+    }
 
-  public void destroy() {
-    exists = false;
-  }
+    public void setCurrentImg(Image img) {
+        this.currentImg = img;
+    }
 
-  public boolean isDestroyed() {
-    return !exists;
-  }
+    public Image getCurrentImg() {
+        return currentImg;
+    }
 
-  public abstract void update();
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    public void destroy() {
+        exists = false;
+    }
+
+    public boolean isDestroyed() {
+        return !exists;
+    }
+
+    public abstract void update();
 }

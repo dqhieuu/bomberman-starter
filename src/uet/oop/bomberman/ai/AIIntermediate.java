@@ -13,21 +13,18 @@ public class AIIntermediate extends AIComponent {
     private int evadeThreshold;
     private int maxEvadeWeight;
     private int maxSeekWeight;
-    private final int AILevel;
-    private boolean chaseMode;
 
     public AIIntermediate(AIControlledObject object, MainGameScene scene, int AILevel) {
         super(object, scene);
-        this.AILevel = AILevel;
-        switch (AILevel){
+        switch (AILevel) {
             case 1:
-                BFSRange = 10;
-                evadeThreshold = 3;
-                maxEvadeWeight = 3;
+                BFSRange = 4;
+                evadeThreshold = 999;
+                maxEvadeWeight = 999;
                 maxSeekWeight = 3;
                 break;
             case 2:
-                BFSRange = 5;
+                BFSRange = 7;
                 evadeThreshold = 3;
                 maxEvadeWeight = 3;
                 maxSeekWeight = 3;
@@ -39,16 +36,11 @@ public class AIIntermediate extends AIComponent {
                 maxSeekWeight = 1;
                 break;
         }
-        chaseMode = true;
     }
 
     @Override
     public void update() {
         Bomber bomber = gameScene.bomberman;
-
-        if (AILevel == 1) {
-            chaseMode = bomber.getGridX() == vehicle.getGridX() || bomber.getGridY() == vehicle.getGridY();
-        }
 
         int vehicleX = (int) Math.round(vehicle.getGridX());
         int vehicleY = (int) Math.round(vehicle.getGridY());
@@ -67,7 +59,7 @@ public class AIIntermediate extends AIComponent {
                         vehicleX,
                         bomberY,
                         bomberX);
-        if (res != null && chaseMode) {
+        if (res != null) {
             assert res.peekFirst() != null;
             double nextX = res.peekFirst().getValue();
             assert res.peekFirst() != null;

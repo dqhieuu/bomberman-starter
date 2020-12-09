@@ -47,13 +47,13 @@ public class Doll extends Mob {
                 });
         setMovingSpriteLists(sprites);
 
-        baseSpeed = 0.03;
+        baseSpeed = 0.04;
         setAIComponent(new AIIntermediate(this, (MainGameScene) sceneContext, 1));
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        ((MainGameScene) sceneContext).addPoints(100);
+        ((MainGameScene) sceneContext).addPoints(200);
     }
 }

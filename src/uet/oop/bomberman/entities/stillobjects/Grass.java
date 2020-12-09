@@ -6,10 +6,11 @@ import uet.oop.bomberman.scenes.GameScene;
 
 public class Grass extends Entity {
 
-  public Grass(GameScene scene, double x, double y) {
-    super(scene, x, y, Sprite.grass.getFxImage());
-  }
+    public Grass(GameScene scene, double x, double y) {
+        super(scene, x, y, Sprite.grass.getFxImage());
+    }
 
-  @Override
-  public void update() {}
+    @Override
+    public void update() {
+    }
 }

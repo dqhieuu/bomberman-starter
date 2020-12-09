@@ -38,7 +38,7 @@ public abstract class AIComponent {
         return unblockedPaths;
     }
 
-    public void setFacingDirectionRandomly() {
+    private void setFacingDirectionRandomly() {
         int rand = new Random().nextInt(4);
         switch (rand) {
             case 0:
@@ -65,7 +65,7 @@ public abstract class AIComponent {
         if (gridX == (int) gridX
                 && gridY == (int) gridY
                 && countUnblockedPaths() >= 3
-                && new Random().nextInt(6) == 0) {
+                && new Random().nextInt(3) == 0) {
             setFacingDirectionRandomly();
         } else {
             if (isMoving) {

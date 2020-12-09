@@ -21,126 +21,137 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class IntermissionScene implements GameScene {
-  public enum IntermissionType {
-    FIRST_LEVEL,
-    REPLAY_LEVEL,
-    NEXT_LEVEL,
-    GAME_OVER
-  };
-
-  private final Text intermissionText;
-
-  private String levelLabel;
-  private int mapWidth;
-  private int mapHeight;
-  private List<String> mapData;
-  private int bomberX;
-  private int bomberY;
-
-  public IntermissionScene(IntermissionType intermissionType) {
-    intermissionText = new Text(this, 5.5, 8, false);
-    if (intermissionType == IntermissionType.FIRST_LEVEL
-        || intermissionType == IntermissionType.NEXT_LEVEL
-        || intermissionType == IntermissionType.REPLAY_LEVEL) {
-      GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.STAGE_START, false);
-      if (intermissionType == IntermissionType.FIRST_LEVEL) {
-        GameVars.currentLevel = 1;
-        GameVars.playerLives = 30;
-        GameVars.playerPoints = 0;
-        GameVars.playerFlames = 2;
-        GameVars.playerBombs = 1;
-        GameVars.playerSpeed = 0.05;
-        GameVars.canRemoteBombs = false;
-        GameVars.canWalkThroughWall = false;
-        GameVars.canWalkThroughFire = false;
-        GameVars.canWalkThroughBomb = false;
-      } else if (intermissionType == IntermissionType.NEXT_LEVEL) {
-        GameVars.currentLevel++;
-      }
-
-      if (GameVars.currentLevel > BombermanGame.levelPaths.length) {
-        GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.ENDING, false);
-        intermissionText.setText("YOU WIN");
-      } else {
-        if (!readMapFile(BombermanGame.levelPaths[GameVars.currentLevel - 1])) {
-          ErrorDialog.displayAndExit("Lỗi load map", "Map không đúng định dạng");
-        }
-
-        intermissionText.setText(levelLabel);
-
-        Animation countdown =
-            new Timeline(
-                new KeyFrame(
-                    Duration.seconds(3),
-                    e ->
-                        BombermanGame.setCurrentGameScene(
-                            new MainGameScene(mapWidth, mapHeight, mapData, bomberX, bomberY))));
-        countdown.play();
-      }
-    } else if (intermissionType == IntermissionType.GAME_OVER) {
-      GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.GAME_OVER, false);
-      intermissionText.setText("GAME OVER");
+    public enum IntermissionType {
+        FIRST_LEVEL,
+        REPLAY_LEVEL,
+        NEXT_LEVEL,
+        GAME_OVER
     }
-  }
 
-  private boolean readMapFile(String path) {
-    try {
-      mapData = new ArrayList<>();
-      BufferedReader br =
-          new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
+    private final Text intermissionText;
 
-      String currentLine = br.readLine();
-      Pattern pattern = Pattern.compile("(^.+)\\s+(\\d+)\\s+(\\d+$)");
-      Matcher matcher = pattern.matcher(currentLine);
+    private String levelLabel;
+    private int mapWidth;
+    private int mapHeight;
+    private List<String> mapData;
+    private int bomberX;
+    private int bomberY;
 
-      if (!matcher.find()) {
-        return false;
-      }
+    public IntermissionScene(IntermissionType intermissionType) {
+        intermissionText = new Text(this, 5.5, 8, false);
+        if (intermissionType == IntermissionType.FIRST_LEVEL
+                || intermissionType == IntermissionType.NEXT_LEVEL
+                || intermissionType == IntermissionType.REPLAY_LEVEL) {
+            GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.STAGE_START, false);
+            if (intermissionType == IntermissionType.FIRST_LEVEL) {
+                GameVars.currentLevel = 1;
+                GameVars.playerLives = 3;
+                GameVars.playerPoints = 0;
+                GameVars.playerPowerUpBomb = 0;
+                GameVars.playerPowerUpFlame = 0;
+                GameVars.playerPowerUpSpeed = 0;
+            } else if (intermissionType == IntermissionType.NEXT_LEVEL) {
+                GameVars.currentLevel++;
+            } else {
+                GameVars.playerPowerUpBomb = 0;
+                GameVars.playerPowerUpFlame = 0;
+                GameVars.playerPowerUpSpeed = 0;
+            }
 
-      levelLabel = matcher.group(1);
-      mapHeight = Integer.parseInt(matcher.group(2));
-      mapWidth = Integer.parseInt(matcher.group(3));
+            if (GameVars.currentLevel > BombermanGame.levelPaths.length) {
+                BombermanGame.setHighScore(GameVars.playerPoints);
+                GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.ENDING, false);
+                intermissionText.setText("YOU WIN");
+            } else {
+                if (!readMapFile(BombermanGame.levelPaths[GameVars.currentLevel - 1])) {
+                    ErrorDialog.displayAndExit("Lỗi load map", "Map không đúng định dạng");
+                }
 
-      while ((currentLine = br.readLine()) != null) {
-        if (currentLine.length() != 0) {
-          if (currentLine.length() < mapWidth) {
+                intermissionText.setText(levelLabel);
+
+                Animation countdown =
+                        new Timeline(
+                                new KeyFrame(
+                                        Duration.seconds(3),
+                                        e ->
+                                                BombermanGame.setCurrentGameScene(
+                                                        new MainGameScene(mapWidth, mapHeight, mapData, bomberX, bomberY))));
+                countdown.play();
+            }
+        } else if (intermissionType == IntermissionType.GAME_OVER) {
+            BombermanGame.setHighScore(GameVars.playerPoints);
+            GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.GAME_OVER, false);
+            intermissionText.setText("GAME OVER");
+            Animation countdown =
+                    new Timeline(
+                            new KeyFrame(
+                                    Duration.seconds(6),
+                                    e ->
+                                            BombermanGame.setCurrentGameScene(
+                                                    new MainMenuScene())));
+            countdown.play();
+        }
+    }
+
+    private boolean readMapFile(String path) {
+        try {
+            mapData = new ArrayList<>();
+            BufferedReader br =
+                    new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(path)));
+
+            String currentLine = br.readLine();
+            Pattern pattern = Pattern.compile("(^.+)\\s+(\\d+)\\s+(\\d+$)");
+            Matcher matcher = pattern.matcher(currentLine);
+
+            if (!matcher.find()) {
+                return false;
+            }
+
+            levelLabel = matcher.group(1);
+            mapHeight = Integer.parseInt(matcher.group(2));
+            mapWidth = Integer.parseInt(matcher.group(3));
+
+            while ((currentLine = br.readLine()) != null) {
+                if (currentLine.length() != 0) {
+                    if (currentLine.length() < mapWidth) {
+                        return false;
+                    }
+                    mapData.add(currentLine);
+                }
+            }
+
+            if (mapData.size() < mapHeight) {
+                return false;
+            }
+
+            for (int i = 0; i < mapHeight; i++) {
+                for (int j = 0; j < mapWidth; j++) {
+                    if (mapData.get(i).charAt(j) == 'p') {
+                        bomberX = j;
+                        bomberY = i;
+                        return true;
+                    }
+                }
+            }
+
             return false;
-          }
-          mapData.add(currentLine);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-      }
-
-      if (mapData.size() < mapHeight) {
-        return false;
-      }
-
-      for (int i = 0; i < mapHeight; i++) {
-        for (int j = 0; j < mapWidth; j++) {
-          if(mapData.get(i).charAt(j) == 'p') {
-            bomberX = j;
-            bomberY = i;
-            return true;
-          }
-        }
-      }
-
-      return false;
-
-
-    } catch (IOException e) {
-      e.printStackTrace();
+        return true;
     }
-    return true;
-  }
 
-  @Override
-  public void update() {}
+    @Override
+    public void update() {
+    }
 
-  @Override
-  public void render(GraphicsContext gc) {
-    gc.setFill(Color.BLACK);
-    gc.fillRect(0, 0, BombermanGame.canvas.getWidth(), BombermanGame.canvas.getHeight());
+    @Override
+    public void render(GraphicsContext gc) {
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, BombermanGame.canvas.getWidth(), BombermanGame.canvas.getHeight());
 
-    intermissionText.render(gc);
-  }
+        intermissionText.render(gc);
+    }
 }

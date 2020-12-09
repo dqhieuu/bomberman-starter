@@ -14,7 +14,7 @@ public abstract class PowerUp extends CollidableObject {
     }
 
     public void activateDespawnTimer() {
-        Animation countdown = new Timeline(new KeyFrame(Duration.seconds(15), e -> destroy()));
+        Animation countdown = new Timeline(new KeyFrame(Duration.seconds(30), e -> destroy()));
         countdown.play();
     }
 }

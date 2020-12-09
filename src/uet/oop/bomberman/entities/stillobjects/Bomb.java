@@ -16,7 +16,6 @@ import uet.oop.bomberman.scenes.MainGameScene;
 import uet.oop.bomberman.utils.GameMediaPlayer;
 
 public class Bomb extends CollidableObject {
-
     protected Bomber bombermanContext;
     protected int blastRadius;
 
@@ -24,9 +23,7 @@ public class Bomb extends CollidableObject {
     protected boolean isAnimationReverse = false;
 
     private static final Image[] spriteList = {
-            Sprite.bomb.getFxImage(),
-            Sprite.bomb_1.getFxImage(),
-            Sprite.bomb_2.getFxImage(),
+            Sprite.bomb.getFxImage(), Sprite.bomb_1.getFxImage(), Sprite.bomb_2.getFxImage(),
     };
 
     public Bomb(GameScene scene, double x, double y, int blastRadius, Bomber bomber) {
@@ -64,10 +61,14 @@ public class Bomb extends CollidableObject {
                                 }));
         spriteChanger.setCycleCount(Animation.INDEFINITE);
         spriteChanger.play();
-        Animation countdown = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
-            spriteChanger.stop();
-            destroy();
-        }));
+        Animation countdown =
+                new Timeline(
+                        new KeyFrame(
+                                Duration.seconds(3),
+                                e -> {
+                                    spriteChanger.stop();
+                                    destroy();
+                                }));
         countdown.play();
     }
 
@@ -84,7 +85,7 @@ public class Bomb extends CollidableObject {
                 ((MainGameScene) sceneContext).setStillObjectAt(flame, curX, curY);
                 return true;
             } else {
-                if (!(objectToBeDestroyed instanceof Wall) && !(objectToBeDestroyed instanceof Flame)) {
+                if ( !(objectToBeDestroyed instanceof Flame)) {
                     objectToBeDestroyed.destroy();
                 }
             }
@@ -148,7 +149,6 @@ public class Bomb extends CollidableObject {
         }
     }
 
-
     public void setTilesOnFire() {
         int intX = (int) gridX;
         int intY = (int) gridY;
@@ -193,7 +193,8 @@ public class Bomb extends CollidableObject {
                         getRealX() - camera.getX(),
                         getRealY() - camera.getY() + BombermanGame.CANVAS_OFFSET_Y);
             } else {
-                gc.drawImage(Sprite.grass.getFxImage(), getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
+                gc.drawImage(
+                        Sprite.grass.getFxImage(), getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
                 gc.drawImage(currentImg, getRealX(), getRealY() + BombermanGame.CANVAS_OFFSET_Y);
             }
         }

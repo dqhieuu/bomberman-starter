@@ -13,6 +13,9 @@ public class Wall extends CollidableObject {
 
     @Override
     public void update() {
+    }
 
+    @Override
+    public void destroy() {
     }
 }

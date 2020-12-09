@@ -36,7 +36,6 @@ public class BrickWall extends CollidableObject {
 
     @Override
     public void update() {
-
     }
 
     @Override
@@ -53,7 +52,7 @@ public class BrickWall extends CollidableObject {
                                     } else {
                                         super.destroy();
                                         if (objectUnderneath != null) {
-                                            if(objectUnderneath instanceof PowerUp) {
+                                            if (objectUnderneath instanceof PowerUp) {
                                                 ((PowerUp) objectUnderneath).activateDespawnTimer();
                                             }
                                             objectUnderneath.setCamera(camera);

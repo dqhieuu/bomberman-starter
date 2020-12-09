@@ -6,14 +6,16 @@ import javafx.animation.Timeline;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import javafx.util.Pair;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.MovableObject;
 import uet.oop.bomberman.entities.Text;
-import uet.oop.bomberman.entities.mobileobjects.enemies.*;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
-import uet.oop.bomberman.entities.stillobjects.*;
+import uet.oop.bomberman.entities.mobileobjects.enemies.*;
+import uet.oop.bomberman.entities.stillobjects.BrickWall;
+import uet.oop.bomberman.entities.stillobjects.Grass;
+import uet.oop.bomberman.entities.stillobjects.Portal;
+import uet.oop.bomberman.entities.stillobjects.Wall;
 import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpBomb;
 import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpFlame;
 import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpSpeed;
@@ -23,12 +25,7 @@ import uet.oop.bomberman.utils.AlgorithmicProcessor;
 import uet.oop.bomberman.utils.GameMediaPlayer;
 import uet.oop.bomberman.utils.GameVars;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 public class MainGameScene implements GameScene {
@@ -44,11 +41,12 @@ public class MainGameScene implements GameScene {
 
     public Bomber bomberman;
 
-    private int timeLeft;
+    private int timeLeft = 200;
 
     private final Text textPoints;
     private final Text textTime;
     private final Text textLives;
+
 
     private boolean stageCompleted = false;
 
@@ -56,8 +54,6 @@ public class MainGameScene implements GameScene {
             int levelWidth, int levelHeight, List<String> mapData, int bomberX, int bomberY) {
         gridWidth = levelWidth;
         gridHeight = levelHeight;
-
-        timeLeft = 200;
 
         stillObjects = new Entity[levelHeight][levelWidth];
         enemies = new ArrayList<>();
@@ -228,25 +224,6 @@ public class MainGameScene implements GameScene {
         return this.stageCompleted;
     }
 
-    public void updateHighScore(){
-        try{
-            File originalFile = new File("res/HighScore.txt");
-            File updatedFile = new File("res/tempHighScore.txt");
-            PrintWriter writer = new PrintWriter(new FileWriter(updatedFile));
-            writer.println(GameVars.highScore);
-            writer.flush();
-            if(!updatedFile.renameTo(originalFile)){
-                System.out.println("Could not rename new file");
-            }
-            if(!originalFile.delete()){
-                System.out.println("Could not delete file");
-            }
-            writer.close();
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void update() {
         if (!stageCompleted) {
@@ -285,33 +262,6 @@ public class MainGameScene implements GameScene {
         }
     }
 
-    private void bfsTest() {
-        //     test bfs
-        if (Math.random() > 0.9975) {
-            int[][] outp = AlgorithmicProcessor.getProcessedGraph(stillObjects);
-            for (int[] a : outp) {
-                for (int b : a) {
-                    System.out.printf("%3d ", b);
-                }
-                System.out.println();
-            }
-            System.out.println();
-            Deque<Pair<Integer, Integer>> res =
-                    AlgorithmicProcessor.getPathFromGraph(
-                            outp, 1000, 1000, 1, AlgorithmicProcessor.INFINITY, 1, 1, 7, 9);
-            if (res != null) {
-                System.out.printf("Length: %d\n", res.size());
-                for (Pair<Integer, Integer> p : res) {
-                    System.out.printf("(%d %d)", p.getValue(), p.getKey());
-                    Flame flame = new Flame(this, p.getValue(), p.getKey(), "center");
-                    flame.setCamera(camera);
-                    setStillObjectAt(flame, p.getValue(), p.getKey());
-                }
-                System.out.println();
-            }
-        }
-    }
-
     @Override
     public void render(GraphicsContext gc) {
         gc.setFill(Color.rgb(173, 173, 173));
@@ -325,8 +275,8 @@ public class MainGameScene implements GameScene {
 
         enemies.forEach(g -> g.render(gc));
         bomberman.render(gc);
-        textPoints.render(gc);
-        textLives.render(gc);
-        textTime.render(gc);
+        textPoints.renderAsUI(gc);
+        textLives.renderAsUI(gc);
+        textTime.renderAsUI(gc);
     }
 }

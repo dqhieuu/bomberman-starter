@@ -11,11 +11,12 @@ public class Portal extends CollidableObject {
     }
 
     @Override
-    public void update() {}
+    public void update() {
+    }
 
     public void checkLevelFinished() {
-        if(((MainGameScene)sceneContext).getEnemies().size() == 0) {
-            ((MainGameScene)sceneContext).setStageCompleted();
+        if (((MainGameScene) sceneContext).getEnemies().size() == 0) {
+            ((MainGameScene) sceneContext).setStageCompleted();
         }
     }
 

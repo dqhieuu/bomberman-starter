@@ -13,13 +13,5 @@ public abstract class UserControlledObject extends MovableObject {
         movePad = new MovePad();
     }
 
-    public void setMovePad(MovePad movePad) {
-        this.movePad = movePad;
-    }
-
-    public MovePad getMovePad() {
-        return movePad;
-    }
-
     public abstract void bindInput(Scene currentScene);
 }
