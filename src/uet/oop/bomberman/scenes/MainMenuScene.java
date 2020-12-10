@@ -12,12 +12,11 @@ import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.PlainImage;
 import uet.oop.bomberman.entities.Text;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.utils.GameVars;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainMenuScene implements GameScene {
+public class MainMenuScene extends GameScene {
     private final Text menuText;
     private final Text highScore;
     private boolean blink = false;
@@ -33,7 +32,7 @@ public class MainMenuScene implements GameScene {
         int i = 0;
         for (int x = 0; x < Sprite.MENU_WIDTH; x++) {
             for (int y = 0; y < Sprite.MENU_HEIGHT; y++) {
-                menu.add(new PlainImage(this, 4 + x, 1 + y,
+                menu.add(new PlainImage(this, 4 + x, 3 + y,
                         Sprite.menuTitle.get(i).getFxImage()));
                 i++;
             }
@@ -44,6 +43,7 @@ public class MainMenuScene implements GameScene {
                                 Duration.millis(800),
                                 e -> blink = !blink
                         ));
+        addObservableAnimation(blinkingWords);
         blinkingWords.setCycleCount(Timeline.INDEFINITE);
         blinkingWords.play();
         keyEvent(BombermanGame.primaryStage.getScene());
@@ -68,11 +68,11 @@ public class MainMenuScene implements GameScene {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, BombermanGame.canvas.getWidth(), BombermanGame.canvas.getHeight());
         for (Entity item : menu) {
-            item.render(gc);
+            item.renderAsUI(gc);
         }
-        if (blink) {
-            menuText.render(gc);
+        if (!blink) {
+            menuText.renderAsUI(gc);
         }
-        highScore.render(gc);
+        highScore.renderAsUI(gc);
     }
 }

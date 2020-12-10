@@ -11,7 +11,6 @@ import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 import uet.oop.bomberman.utils.GameMediaPlayer;
 
@@ -26,7 +25,7 @@ public class Bomb extends CollidableObject {
             Sprite.bomb.getFxImage(), Sprite.bomb_1.getFxImage(), Sprite.bomb_2.getFxImage(),
     };
 
-    public Bomb(GameScene scene, double x, double y, int blastRadius, Bomber bomber) {
+    public Bomb(MainGameScene scene, double x, double y, int blastRadius, Bomber bomber) {
         super(scene, x, y, Sprite.bomb.getFxImage());
 
         this.isSolid = true;
@@ -59,6 +58,7 @@ public class Bomb extends CollidableObject {
 
                                     setCurrentImg(spriteList[spriteIndex]);
                                 }));
+        sceneContext.addObservableAnimation(spriteChanger);
         spriteChanger.setCycleCount(Animation.INDEFINITE);
         spriteChanger.play();
         Animation countdown =
@@ -69,6 +69,7 @@ public class Bomb extends CollidableObject {
                                     spriteChanger.stop();
                                     destroy();
                                 }));
+        sceneContext.addObservableAnimation(countdown);
         countdown.play();
     }
 
@@ -80,7 +81,7 @@ public class Bomb extends CollidableObject {
         Entity objectToBeDestroyed = ((MainGameScene) sceneContext).getStillObjectAt(curX, curY);
         if (objectToBeDestroyed != null) {
             if (objectToBeDestroyed instanceof Grass) {
-                Flame flame = new Flame(sceneContext, curX, curY, flameType);
+                Flame flame = new Flame((MainGameScene) sceneContext, curX, curY, flameType);
                 flame.setCamera(camera);
                 ((MainGameScene) sceneContext).setStillObjectAt(flame, curX, curY);
                 return true;
@@ -153,7 +154,7 @@ public class Bomb extends CollidableObject {
         int intX = (int) gridX;
         int intY = (int) gridY;
         if (blastRadius >= 1) {
-            Flame flame = new Flame(sceneContext, gridX, gridY, "center");
+            Flame flame = new Flame((MainGameScene) sceneContext, gridX, gridY, "center");
             flame.setCamera(camera);
             ((MainGameScene) sceneContext).setStillObjectAt(flame, intX, intY);
 

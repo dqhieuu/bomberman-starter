@@ -4,14 +4,13 @@ import javafx.scene.image.Image;
 import uet.oop.bomberman.ai.AINewbie;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Balloom extends Mob {
-    public Balloom(GameScene scene, double x, double y) {
+    public Balloom(MainGameScene scene, double x, double y) {
         super(scene, x, y, Sprite.balloom_right1.getFxImage());
         setFirstDeadSprite(Sprite.balloom_dead.getFxImage());
         Map<String, Image[]> sprites = new HashMap<>();

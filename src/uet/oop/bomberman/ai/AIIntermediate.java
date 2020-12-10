@@ -2,37 +2,30 @@ package uet.oop.bomberman.ai;
 
 import javafx.util.Pair;
 import uet.oop.bomberman.entities.AIControlledObject;
-import uet.oop.bomberman.entities.mobileobjects.Bomber;
 import uet.oop.bomberman.scenes.MainGameScene;
-import uet.oop.bomberman.utils.AlgorithmicProcessor;
 
 import java.util.Deque;
 
 public class AIIntermediate extends AIComponent {
-    private int BFSRange;
-    private int evadeThreshold;
-    private int maxEvadeWeight;
-    private int maxSeekWeight;
+    private final int BFSRange;
+    private final int evadeThreshold;
+    private final int maxEvadeWeight;
+    private final int maxSeekWeight;
 
     public AIIntermediate(AIControlledObject object, MainGameScene scene, int AILevel) {
         super(object, scene);
         switch (AILevel) {
+            default:
             case 1:
-                BFSRange = 4;
+                BFSRange = 5;
                 evadeThreshold = 999;
-                maxEvadeWeight = 999;
-                maxSeekWeight = 3;
+                maxEvadeWeight = 0;
+                maxSeekWeight = 2;
                 break;
             case 2:
                 BFSRange = 7;
-                evadeThreshold = 3;
-                maxEvadeWeight = 3;
-                maxSeekWeight = 3;
-                break;
-            case 3:
-                BFSRange = 5;
-                evadeThreshold = 2;
-                maxEvadeWeight = 3;
+                evadeThreshold = 999;
+                maxEvadeWeight = 0;
                 maxSeekWeight = 1;
                 break;
         }
@@ -40,41 +33,9 @@ public class AIIntermediate extends AIComponent {
 
     @Override
     public void update() {
-        Bomber bomber = gameScene.bomberman;
-
-        int vehicleX = (int) Math.round(vehicle.getGridX());
-        int vehicleY = (int) Math.round(vehicle.getGridY());
-
-        int bomberX = (int) Math.round(bomber.getGridX());
-        int bomberY = (int) Math.round(bomber.getGridY());
-
-        Deque<Pair<Integer, Integer>> res =
-                AlgorithmicProcessor.getPathFromGraph(
-                        gameScene.getStillObjectAdjacencyMatrix(),
-                        evadeThreshold,
-                        maxEvadeWeight,
-                        maxSeekWeight,
-                        BFSRange,
-                        vehicleY,
-                        vehicleX,
-                        bomberY,
-                        bomberX);
-        if (res != null) {
-            assert res.peekFirst() != null;
-            double nextX = res.peekFirst().getValue();
-            assert res.peekFirst() != null;
-            double nextY = res.peekFirst().getKey();
-
-            if (nextX - vehicle.getGridX() > ROUND_DISTANCE) {
-                vehicle.moveRight();
-            } else if (nextX - vehicle.getGridX() < -ROUND_DISTANCE) {
-                vehicle.moveLeft();
-            } else if (nextY - vehicle.getGridY() > ROUND_DISTANCE) {
-                vehicle.moveDown();
-            } else if (nextY - vehicle.getGridY() < -ROUND_DISTANCE) {
-                vehicle.moveUp();
-            }
-
+        Deque<Pair<Integer, Integer>> path = BFSToBomber(evadeThreshold, maxEvadeWeight, maxSeekWeight, BFSRange);
+        if (path != null) {
+            moveAccordingToCalculatedPath(path);
         } else {
             moveRandomly();
         }

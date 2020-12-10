@@ -3,7 +3,6 @@ package uet.oop.bomberman.entities;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.misc.Direction;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 public abstract class MovableObject extends CollidableObject {
@@ -17,7 +16,7 @@ public abstract class MovableObject extends CollidableObject {
     protected double baseSpeed = 0.05;
     protected boolean isDead = false;
 
-    public MovableObject(GameScene scene, double x, double y, Image img) {
+    public MovableObject(MainGameScene scene, double x, double y, Image img) {
         super(scene, x, y, img);
         facingDirection = Direction.EAST;
     }

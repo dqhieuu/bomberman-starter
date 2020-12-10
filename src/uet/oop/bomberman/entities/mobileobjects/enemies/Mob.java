@@ -10,7 +10,6 @@ import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.stillobjects.Flame;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.util.Map;
@@ -29,7 +28,7 @@ public abstract class Mob extends AIControlledObject {
     private int spriteIndex = 0;
     private Map<String, Image[]> movingSpriteLists;
 
-    public Mob(GameScene scene, double x, double y, Image img) {
+    public Mob(MainGameScene scene, double x, double y, Image img) {
         super(scene, x, y, img);
         spriteChanger =
                 new Timeline(
@@ -43,7 +42,9 @@ public abstract class Mob extends AIControlledObject {
                                         setCurrentImg(movingSpriteLists.get(facingDirection.toString())[spriteIndex]);
                                     }
                                 }));
+        sceneContext.addObservableAnimation(spriteChanger);
         spriteChanger.setCycleCount(Animation.INDEFINITE);
+
     }
 
     public void playAnimation() {
@@ -142,6 +143,7 @@ public abstract class Mob extends AIControlledObject {
                                         super.destroy();
                                     }
                                 }));
+        sceneContext.addObservableAnimation(deadAnimation);
         deadAnimation.setCycleCount(deadSprites.length - deadSpriteIndex + 1);
         deadAnimation.play();
     }

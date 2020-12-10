@@ -41,10 +41,6 @@ public class Camera {
         }
     }
 
-    public int getRenderHeight() {
-        return renderHeight;
-    }
-
     public int getX() {
         return x;
     }

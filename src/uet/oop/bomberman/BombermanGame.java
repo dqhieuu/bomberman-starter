@@ -9,6 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainMenuScene;
 
@@ -16,20 +17,20 @@ import java.awt.*;
 import java.util.prefs.Preferences;
 
 public class BombermanGame extends Application {
-    public static final int CANVAS_OFFSET_Y = 64;
-    public static final int CANVAS_WIDTH = 512;
-    public static final int CANVAS_HEIGHT = 480;
+    public static final int CANVAS_OFFSET_Y = 2 * Sprite.DEFAULT_SIZE * Sprite.SCALE_RATIO;
+    public static final int CANVAS_WIDTH = 16 * Sprite.DEFAULT_SIZE * Sprite.SCALE_RATIO;
+    public static final int CANVAS_HEIGHT = 13 * Sprite.DEFAULT_SIZE * Sprite.SCALE_RATIO + CANVAS_OFFSET_Y;
     public static final double TARGET_FRAME_RATE = 60.0;
     public static final String[] levelPaths = {
-            "/levels/Level1.txt", "/levels/Level2.txt",
+            "/levels/Level1.txt", "/levels/Level2.txt"
     };
 
     private static double gameSpeed;
 
-    public static Font pixelFont;
+    private static Font pixelFont;
 
-    public static Stage primaryStage;
     public static GraphicsContext gc;
+    public static Stage primaryStage;
     public static Canvas canvas;
 
     private static final Preferences prefs = Preferences.userNodeForPackage(BombermanGame.class);
@@ -39,12 +40,12 @@ public class BombermanGame extends Application {
     private static int frameCount;
 
     public static void main(String[] args) {
-        Application.launch(BombermanGame.class);
+        Application.launch(BombermanGame.class, args);
     }
 
     @Override
     public void init() {
-        pixelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/Pixel_NES.otf"), 24);
+        pixelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/Pixel_NES.otf"), 12 * Sprite.SCALE_RATIO);
         int refreshRate =
                 GraphicsEnvironment.getLocalGraphicsEnvironment()
                         .getScreenDevices()[0]
@@ -65,6 +66,8 @@ public class BombermanGame extends Application {
         // Tao Canvas
         canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         gc = canvas.getGraphicsContext2D();
+
+        // Set font mac dinh
         gc.setFont(pixelFont);
 
         // Tao root container
@@ -119,6 +122,7 @@ public class BombermanGame extends Application {
     }
 
     public static void setCurrentGameScene(GameScene currentGameScene) {
+        BombermanGame.currentGameScene.setInactive();
         BombermanGame.currentGameScene = currentGameScene;
     }
 
@@ -127,7 +131,7 @@ public class BombermanGame extends Application {
     }
 
     public static void setHighScore(int score) {
-        if(getHighScore() < score) {
+        if (getHighScore() < score) {
             prefs.putInt("highScore", score);
         }
     }

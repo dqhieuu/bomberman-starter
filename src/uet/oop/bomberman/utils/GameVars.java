@@ -6,7 +6,7 @@ public class GameVars {
     public static int playerPoints;
     public static int playerPowerUpFlame;
     public static int playerPowerUpBomb;
-    public static double playerPowerUpSpeed;
+    public static int playerPowerUpSpeed;
     public static boolean canRemoteBombs;
     public static boolean canWalkThroughWall;
     public static boolean canWalkThroughFire;

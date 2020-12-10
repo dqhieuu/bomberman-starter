@@ -11,7 +11,6 @@ import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.stillobjects.powerups.PowerUp;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 public class BrickWall extends CollidableObject {
@@ -25,7 +24,7 @@ public class BrickWall extends CollidableObject {
 
     Entity objectUnderneath;
 
-    public BrickWall(GameScene scene, double x, double y) {
+    public BrickWall(MainGameScene scene, double x, double y) {
         super(scene, x, y, Sprite.brick.getFxImage());
         isSolid = true;
     }
@@ -60,6 +59,7 @@ public class BrickWall extends CollidableObject {
                                         }
                                     }
                                 }));
+        sceneContext.addObservableAnimation(spriteChanger);
         spriteChanger.setCycleCount(destroyedBrickWall.length);
         spriteChanger.play();
     }

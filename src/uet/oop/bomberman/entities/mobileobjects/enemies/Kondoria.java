@@ -1,17 +1,16 @@
 package uet.oop.bomberman.entities.mobileobjects.enemies;
 
 import javafx.scene.image.Image;
-import uet.oop.bomberman.ai.AIIntermediate;
+import uet.oop.bomberman.ai.AIGod;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Kondoria extends Mob {
-    public Kondoria(GameScene scene, double x, double y) {
+    public Kondoria(MainGameScene scene, double x, double y) {
         super(scene, x, y, Sprite.kondoria_right1.getFxImage());
         setFirstDeadSprite(Sprite.kondoria_dead.getFxImage());
         Map<String, Image[]> sprites = new HashMap<>();
@@ -46,12 +45,12 @@ public class Kondoria extends Mob {
         setMovingSpriteLists(sprites);
 
         baseSpeed = 0.04;
-        setAIComponent(new AIIntermediate(this, (MainGameScene) sceneContext, 2));
+        setAIComponent(new AIGod(this, (MainGameScene) sceneContext));
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        ((MainGameScene) sceneContext).addPoints(300);
+        ((MainGameScene) sceneContext).addPoints(500);
     }
 }

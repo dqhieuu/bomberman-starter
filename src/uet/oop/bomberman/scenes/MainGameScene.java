@@ -28,27 +28,23 @@ import uet.oop.bomberman.utils.GameVars;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainGameScene implements GameScene {
+public class MainGameScene extends GameScene {
     private final int gridWidth;
     private final int gridHeight;
 
     private final List<MovableObject> enemies;
     private final Entity[][] stillObjects;
-
-    private int[][] stillObjectAdjacencyMatrix;
+    private int[][] stillObjectGraph;
 
     public Camera camera;
-
     public Bomber bomberman;
 
     private int timeLeft = 200;
+    private boolean stageCompleted = false;
 
     private final Text textPoints;
     private final Text textTime;
     private final Text textLives;
-
-
-    private boolean stageCompleted = false;
 
     public MainGameScene(
             int levelWidth, int levelHeight, List<String> mapData, int bomberX, int bomberY) {
@@ -83,6 +79,7 @@ public class MainGameScene implements GameScene {
                                         textTime.setText(String.format("TIME %d", timeLeft));
                                     }
                                 }));
+        addObservableAnimation(countdownTimer);
         countdownTimer.setCycleCount(Timeline.INDEFINITE);
         countdownTimer.play();
 
@@ -194,8 +191,8 @@ public class MainGameScene implements GameScene {
         stillObjects[y][x] = object;
     }
 
-    public int[][] getStillObjectAdjacencyMatrix() {
-        return stillObjectAdjacencyMatrix;
+    public int[][] getStillObjectGraph() {
+        return stillObjectGraph;
     }
 
     public void addPoints(int points) {
@@ -217,6 +214,7 @@ public class MainGameScene implements GameScene {
                                 e ->
                                         BombermanGame.setCurrentGameScene(
                                                 new IntermissionScene(IntermissionScene.IntermissionType.NEXT_LEVEL))));
+        addObservableAnimation(countdownTimer);
         countdownTimer.play();
     }
 
@@ -226,16 +224,24 @@ public class MainGameScene implements GameScene {
 
     @Override
     public void update() {
+        // thay thế ô đã bị phá huỷ bằng cỏ
+        for (int i = 0; i < gridHeight; i++) {
+            for (int j = 0; j < gridWidth; j++) {
+                if (stillObjects[i][j].isDestroyed()) {
+                    Entity grass = new Grass(this, j, i);
+                    grass.setCamera(camera);
+                    stillObjects[i][j] = grass;
+                }
+            }
+        }
+
         if (!stageCompleted) {
-            if (!bomberman.isDestroyed() && timeLeft > 0) {
-                for (int i = 0; i < gridHeight; i++) {
-                    for (int j = 0; j < gridWidth; j++) {
-                        if (stillObjects[i][j].isDestroyed()) {
-                            Entity grass = new Grass(this, j, i);
-                            grass.setCamera(camera);
-                            stillObjects[i][j] = grass;
-                        }
-                    }
+            // ma trận được tạo từ map phục vụ cho thuật toán tìm đường của AI
+            stillObjectGraph = AlgorithmicProcessor.getProcessedGraph(stillObjects);
+
+            if (!bomberman.isDestroyed()) {
+                if (timeLeft <= 0 && !bomberman.isDead()) {
+                    bomberman.destroy();
                 }
 
                 if (enemies.size() > 0) {
@@ -258,12 +264,12 @@ public class MainGameScene implements GameScene {
                             new IntermissionScene(IntermissionScene.IntermissionType.GAME_OVER));
                 }
             }
-            stillObjectAdjacencyMatrix = AlgorithmicProcessor.getProcessedGraph(stillObjects);
         }
     }
 
     @Override
     public void render(GraphicsContext gc) {
+        // tô màu nền của scene là màu xám
         gc.setFill(Color.rgb(173, 173, 173));
         gc.fillRect(0, 0, BombermanGame.canvas.getWidth(), BombermanGame.canvas.getHeight());
 
@@ -275,6 +281,7 @@ public class MainGameScene implements GameScene {
 
         enemies.forEach(g -> g.render(gc));
         bomberman.render(gc);
+
         textPoints.renderAsUI(gc);
         textLives.renderAsUI(gc);
         textTime.renderAsUI(gc);

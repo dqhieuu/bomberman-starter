@@ -77,7 +77,7 @@ public class AlgorithmicProcessor {
 
     private static final int[][] cases = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
-    public static Deque<Pair<Integer, Integer>> getPathFromGraph(
+    public static Deque<Pair<Integer, Integer>> getBFSPathFromGraph(
             int[][] graph,
             int evadeThreshold,
             int maxEvadeWeight,
@@ -133,5 +133,69 @@ public class AlgorithmicProcessor {
         }
 
         return null;
+    }
+
+    public static Deque<Pair<Integer, Integer>> getStraightPathFromGraph(
+            int[][] graph,
+            int maxSeekWeight,
+            int searchRange,
+            int iFrom,
+            int jFrom,
+            int iTo,
+            int jTo) {
+        if (graph == null
+                || (iFrom == iTo && jFrom == jTo)
+                || !((iFrom == iTo || jFrom == jTo))
+                || Math.abs(iFrom - iTo) + Math.abs(jFrom - jTo) > searchRange) {
+            return null;
+        }
+
+        Deque<Pair<Integer, Integer>> path = new ArrayDeque<>();
+
+        int nextI = iFrom;
+        int nextJ = jFrom;
+        if (nextI == iTo) {
+            if (nextJ < jTo) {
+                nextJ++;
+                for (; nextJ <= jTo; nextJ++) {
+                    if (isValidTile(nextI, nextJ, graph) && graph[nextI][nextJ] <= maxSeekWeight) {
+                        path.add(new Pair<>(nextI, nextJ));
+                    } else {
+                        return null;
+                    }
+                }
+            } else {
+                nextJ--;
+                for (; nextJ >= jTo; nextJ--) {
+                    if (isValidTile(nextI, nextJ, graph) && graph[nextI][nextJ] <= maxSeekWeight) {
+                        path.add(new Pair<>(nextI, nextJ));
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        } else {
+            if (nextI < iTo) {
+                nextI++;
+                for (; nextI <= iTo; nextI++) {
+                    if (isValidTile(nextI, nextJ, graph) && graph[nextI][nextJ] <= maxSeekWeight) {
+                        path.add(new Pair<>(nextI, nextJ));
+                    } else {
+                        return null;
+                    }
+                }
+            } else {
+                nextI--;
+                for (; nextI >= iTo; nextI--) {
+                    if (isValidTile(nextI, nextJ, graph) && graph[nextI][nextJ] <= maxSeekWeight) {
+                        path.add(new Pair<>(nextI, nextJ));
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        return path;
     }
 }

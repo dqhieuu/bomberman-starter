@@ -5,18 +5,16 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
-import uet.oop.bomberman.ai.AIGod;
-import uet.oop.bomberman.ai.AIIntermediate;
+import uet.oop.bomberman.ai.AILowerIntermediate;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Oneal extends Mob {
-    public Oneal(GameScene scene, double x, double y) {
+    public Oneal(MainGameScene scene, double x, double y) {
         super(scene, x, y, Sprite.oneal_right1.getFxImage());
         setFirstDeadSprite(Sprite.oneal_dead.getFxImage());
         Map<String, Image[]> sprites = new HashMap<>();
@@ -51,13 +49,14 @@ public class Oneal extends Mob {
         setMovingSpriteLists(sprites);
 
         baseSpeed = 0.03;
-        setAIComponent(new AIIntermediate(this, (MainGameScene) sceneContext, 1));
+        setAIComponent(new AILowerIntermediate(this, (MainGameScene) sceneContext));
 
         Timeline speedChanger =
                 new Timeline(
                         new KeyFrame(
-                                Duration.millis(3000),
-                                e -> baseSpeed = 0.03 + 0.03 * Math.random()));
+                                Duration.millis(2000),
+                                e -> baseSpeed = 0.03 + 0.02 * Math.random()));
+        sceneContext.addObservableAnimation(speedChanger);
         speedChanger.setCycleCount(Animation.INDEFINITE);
         speedChanger.play();
     }
@@ -65,6 +64,6 @@ public class Oneal extends Mob {
     @Override
     public void destroy() {
         super.destroy();
-        ((MainGameScene) sceneContext).addPoints(500);
+        ((MainGameScene) sceneContext).addPoints(200);
     }
 }

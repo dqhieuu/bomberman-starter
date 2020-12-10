@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class IntermissionScene implements GameScene {
+public class IntermissionScene extends GameScene {
     public enum IntermissionType {
         FIRST_LEVEL,
         REPLAY_LEVEL,
@@ -76,6 +76,7 @@ public class IntermissionScene implements GameScene {
                                         e ->
                                                 BombermanGame.setCurrentGameScene(
                                                         new MainGameScene(mapWidth, mapHeight, mapData, bomberX, bomberY))));
+                addObservableAnimation(countdown);
                 countdown.play();
             }
         } else if (intermissionType == IntermissionType.GAME_OVER) {
@@ -89,6 +90,7 @@ public class IntermissionScene implements GameScene {
                                     e ->
                                             BombermanGame.setCurrentGameScene(
                                                     new MainMenuScene())));
+            addObservableAnimation(countdown);
             countdown.play();
         }
     }

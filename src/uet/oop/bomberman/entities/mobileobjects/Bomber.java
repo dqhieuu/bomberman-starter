@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
-import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.MovableObject;
 import uet.oop.bomberman.entities.UserControlledObject;
@@ -21,7 +20,6 @@ import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpFlame;
 import uet.oop.bomberman.entities.stillobjects.powerups.PowerUpSpeed;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 import uet.oop.bomberman.utils.GameMediaPlayer;
 import uet.oop.bomberman.utils.GameVars;
@@ -41,56 +39,56 @@ public class Bomber extends UserControlledObject {
     protected int bombsPlanted = 0;
 
 
-    public Bomber(GameScene scene, double x, double y) {
-        super(scene, x, y, Sprite.player_right.getFxImage());
+    public Bomber(MainGameScene scene, double x, double y) {
+        super(scene, x, y, Sprite.tohru_right.getFxImage());
 
-        setBaseSpeed();
-        setBombBlastRadius();
-        setBombsCanPlant();
+        setBaseSpeed(GameVars.playerPowerUpSpeed);
+        setBombBlastRadius(GameVars.playerPowerUpFlame);
+        setBombsCanPlant(GameVars.playerPowerUpBomb);
 
         if (spriteLists == null) {
             spriteLists = new HashMap<>();
             spriteLists.put(
                     Direction.WEST.toString(),
                     new Image[]{
-                            Sprite.player_left.getFxImage(),
-                            Sprite.player_left_1.getFxImage(),
-                            Sprite.player_left_2.getFxImage(),
+                            Sprite.tohru_left.getFxImage(),
+                            Sprite.tohru_left_1.getFxImage(),
+                            Sprite.tohru_left_2.getFxImage(),
                     });
             spriteLists.put(
                     Direction.EAST.toString(),
                     new Image[]{
-                            Sprite.player_right.getFxImage(),
-                            Sprite.player_right_1.getFxImage(),
-                            Sprite.player_right_2.getFxImage(),
+                            Sprite.tohru_right.getFxImage(),
+                            Sprite.tohru_right_1.getFxImage(),
+                            Sprite.tohru_right_2.getFxImage(),
                     });
             spriteLists.put(
                     Direction.NORTH.toString(),
                     new Image[]{
-                            Sprite.player_up.getFxImage(),
-                            Sprite.player_up_1.getFxImage(),
-                            Sprite.player_up_2.getFxImage(),
+                            Sprite.tohru_up.getFxImage(),
+                            Sprite.tohru_up_1.getFxImage(),
+                            Sprite.tohru_up_2.getFxImage(),
                     });
             spriteLists.put(
                     Direction.SOUTH.toString(),
                     new Image[]{
-                            Sprite.player_down.getFxImage(),
-                            Sprite.player_down_1.getFxImage(),
-                            Sprite.player_down_2.getFxImage(),
+                            Sprite.tohru_down.getFxImage(),
+                            Sprite.tohru_down_1.getFxImage(),
+                            Sprite.tohru_down_2.getFxImage(),
                     });
             spriteLists.put(
                     "dead",
                     new Image[]{
-                            Sprite.player_dead1.getFxImage(),
-                            Sprite.player_dead2.getFxImage(),
-                            Sprite.player_dead3.getFxImage()
+                            Sprite.tohru_dead1.getFxImage(),
+                            Sprite.tohru_dead2.getFxImage(),
+                            Sprite.tohru_dead3.getFxImage()
                     });
         }
 
         spriteChanger =
                 new Timeline(
                         new KeyFrame(
-                                Duration.millis(80),
+                                Duration.millis(150),
                                 e -> {
                                     if (!isDead && exists && !((MainGameScene) sceneContext).isStageCompleted()) {
                                         spriteIndex =
@@ -102,8 +100,8 @@ public class Bomber extends UserControlledObject {
                                         }
                                     }
                                 }));
+        sceneContext.addObservableAnimation(spriteChanger);
         spriteChanger.setCycleCount(Animation.INDEFINITE);
-
     }
 
     public void plantBomb() {
@@ -117,7 +115,7 @@ public class Bomber extends UserControlledObject {
 
         bombsPlanted++;
 
-        Bomb newBomb = new Bomb(sceneContext, bombX, bombY, bombBlastRadius, this);
+        Bomb newBomb = new Bomb((MainGameScene) sceneContext, bombX, bombY, bombBlastRadius, this);
         newBomb.setCamera(camera);
 
         ((MainGameScene) sceneContext).setStillObjectAt(newBomb, bombX, bombY);
@@ -250,35 +248,35 @@ public class Bomber extends UserControlledObject {
         }
     }
 
-    public void setBombsCanPlant() {
-        bombsCanPlant = 1 + GameVars.playerPowerUpBomb;
+    public void setBombsCanPlant(int numOfPowerUps) {
+        bombsCanPlant = 1 + numOfPowerUps;
     }
 
-    public void setBaseSpeed() {
-        baseSpeed = 0.05 + 0.02 * GameVars.playerPowerUpSpeed;
+    public void setBaseSpeed(int numOfPowerUps) {
+        baseSpeed = 0.05 + 0.02 * numOfPowerUps;
     }
 
-    public void setBombBlastRadius() {
-        bombBlastRadius = 2 + GameVars.playerPowerUpFlame;
+    public void setBombBlastRadius(int numOfPowerUps) {
+        bombBlastRadius = 2 + numOfPowerUps;
     }
 
     public void powerUpSpeed() {
         if (GameVars.playerPowerUpSpeed < 3) {
             GameVars.playerPowerUpSpeed++;
-            setBaseSpeed();
+            setBaseSpeed(GameVars.playerPowerUpSpeed);
         }
     }
 
     public void powerUpBomb() {
         GameVars.playerPowerUpBomb++;
-        setBombsCanPlant();
+        setBombsCanPlant(GameVars.playerPowerUpBomb);
     }
 
 
     public void powerUpFlame() {
         if (GameVars.playerPowerUpFlame < 4) {
             GameVars.playerPowerUpFlame++;
-            setBombBlastRadius();
+            setBombBlastRadius(GameVars.playerPowerUpFlame);
         }
     }
 
@@ -290,24 +288,27 @@ public class Bomber extends UserControlledObject {
 
     @Override
     public void destroy() {
-        GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.LIFE_LOST, false);
-        isDead = true;
-        spriteIndex = 0;
-        setCurrentImg(spriteLists.get("dead")[0]);
-        Animation deadAnimation =
-                new Timeline(
-                        new KeyFrame(
-                                Duration.millis(1000),
-                                e -> {
-                                    spriteIndex++;
-                                    if (spriteIndex < spriteLists.get("dead").length) {
-                                        setCurrentImg(spriteLists.get("dead")[spriteIndex]);
-                                    } else {
-                                        super.destroy();
-                                    }
-                                }));
-        deadAnimation.setCycleCount(spriteLists.get("dead").length);
-        deadAnimation.play();
+        if(!isDead) {
+            GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.LIFE_LOST, false);
+            isDead = true;
+            spriteIndex = 0;
+            setCurrentImg(spriteLists.get("dead")[0]);
+            Animation deadAnimation =
+                    new Timeline(
+                            new KeyFrame(
+                                    Duration.millis(1000),
+                                    e -> {
+                                        spriteIndex++;
+                                        if (spriteIndex < spriteLists.get("dead").length) {
+                                            setCurrentImg(spriteLists.get("dead")[spriteIndex]);
+                                        } else {
+                                            super.destroy();
+                                        }
+                                    }));
+            sceneContext.addObservableAnimation(deadAnimation);
+            deadAnimation.setCycleCount(spriteLists.get("dead").length);
+            deadAnimation.play();
+        }
     }
 
     @Override

@@ -30,15 +30,6 @@ public abstract class Entity {
         setCurrentImg(image);
     }
 
-    public Entity(GameScene scene, double gridX, double gridY, Image image, Camera camera) {
-        sceneContext = scene;
-        exists = true;
-        this.gridX = gridX;
-        this.gridY = gridY;
-        setCurrentImg(image);
-        this.camera = camera;
-    }
-
     public void render(GraphicsContext gc) {
         if (exists && currentImg != null) {
             if (camera != null) {
@@ -64,14 +55,6 @@ public abstract class Entity {
 
     public double getGridY() {
         return gridY;
-    }
-
-    public void setGridX(double gridX) {
-        this.gridX = gridX;
-    }
-
-    public void setGridY(double gridY) {
-        this.gridY = gridY;
     }
 
     public int getRealX() {

@@ -9,23 +9,20 @@ import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.scenes.GameScene;
+import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Flame extends CollidableObject {
-    protected String type;
     protected int spriteIndex;
     protected int spriteLength;
     protected boolean isAnimationReverse;
 
     private static Map<String, Image[]> spriteLists;
 
-    public Flame(GameScene scene, double x, double y, String type) {
+    public Flame(MainGameScene scene, double x, double y, String type) {
         super(scene, x, y, Sprite.bomb_exploded.getFxImage());
-
-        this.type = type;
 
         if (spriteLists == null) {
             spriteLists = new HashMap<>();
@@ -110,6 +107,7 @@ public class Flame extends CollidableObject {
                                         setCurrentImg(spriteLists.get(type)[spriteIndex]);
                                     }
                                 }));
+        sceneContext.addObservableAnimation(spriteChanger);
         spriteChanger.setCycleCount(Animation.INDEFINITE);
         spriteChanger.play();
     }

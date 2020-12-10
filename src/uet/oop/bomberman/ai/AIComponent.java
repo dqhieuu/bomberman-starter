@@ -1,16 +1,19 @@
 package uet.oop.bomberman.ai;
 
+import javafx.util.Pair;
 import uet.oop.bomberman.entities.AIControlledObject;
 import uet.oop.bomberman.entities.CollidableObject;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.stillobjects.Grass;
 import uet.oop.bomberman.misc.Direction;
 import uet.oop.bomberman.scenes.MainGameScene;
+import uet.oop.bomberman.utils.AlgorithmicProcessor;
 
+import java.util.Deque;
 import java.util.Random;
 
 public abstract class AIComponent {
-    public static double ROUND_DISTANCE = 0.1;
+    public static final double ROUND_DISTANCE = 0.1;
 
     protected AIControlledObject vehicle;
     protected MainGameScene gameScene;
@@ -53,6 +56,49 @@ public abstract class AIComponent {
             case 3:
                 vehicle.setFacingDirection(Direction.SOUTH);
                 break;
+        }
+    }
+
+    protected Deque<Pair<Integer, Integer>> BFSToBomber(int evadeThreshold, int maxEvadeWeight, int maxSeekWeight, int BFSRange) {
+        return AlgorithmicProcessor.getBFSPathFromGraph(
+                gameScene.getStillObjectGraph(),
+                evadeThreshold,
+                maxEvadeWeight,
+                maxSeekWeight,
+                BFSRange,
+                (int) Math.round(vehicle.getGridY()),
+                (int) Math.round(vehicle.getGridX()),
+                (int) Math.round(gameScene.bomberman.getGridY()),
+                (int) Math.round(gameScene.bomberman.getGridX()));
+    }
+
+    protected Deque<Pair<Integer, Integer>> searchStraightPathToBomber(int searchRange) {
+        return AlgorithmicProcessor.getStraightPathFromGraph(
+                gameScene.getStillObjectGraph(),
+                2,
+                searchRange,
+                (int) Math.round(vehicle.getGridY()),
+                (int) Math.round(vehicle.getGridX()),
+                (int) Math.round(gameScene.bomberman.getGridY()),
+                (int) Math.round(gameScene.bomberman.getGridX()));
+    }
+
+    public void moveAccordingToCalculatedPath(Deque<Pair<Integer, Integer>> path) {
+        if (path != null) {
+            assert path.peekFirst() != null;
+            double nextX = path.peekFirst().getValue();
+            assert path.peekFirst() != null;
+            double nextY = path.peekFirst().getKey();
+
+            if (nextX - vehicle.getGridX() > ROUND_DISTANCE) {
+                vehicle.moveRight();
+            } else if (nextX - vehicle.getGridX() < -ROUND_DISTANCE) {
+                vehicle.moveLeft();
+            } else if (nextY - vehicle.getGridY() > ROUND_DISTANCE) {
+                vehicle.moveDown();
+            } else if (nextY - vehicle.getGridY() < -ROUND_DISTANCE) {
+                vehicle.moveUp();
+            }
         }
     }
 

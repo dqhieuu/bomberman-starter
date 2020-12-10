@@ -4,14 +4,13 @@ import javafx.scene.image.Image;
 import uet.oop.bomberman.ai.AIIntermediate;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.misc.Direction;
-import uet.oop.bomberman.scenes.GameScene;
 import uet.oop.bomberman.scenes.MainGameScene;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Minvo extends Mob {
-    public Minvo(GameScene scene, double x, double y) {
+    public Minvo(MainGameScene scene, double x, double y) {
         super(scene, x, y, Sprite.minvo_right1.getFxImage());
         setFirstDeadSprite(Sprite.minvo_dead.getFxImage());
         Map<String, Image[]> sprites = new HashMap<>();
@@ -46,7 +45,7 @@ public class Minvo extends Mob {
         setMovingSpriteLists(sprites);
 
         baseSpeed = 0.04;
-        setAIComponent(new AIIntermediate(this, (MainGameScene) sceneContext, 3));
+        setAIComponent(new AIIntermediate(this, (MainGameScene) sceneContext, 2));
     }
 
     @Override

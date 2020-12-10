@@ -63,6 +63,33 @@ public class Sprite {
 
     /*
     |--------------------------------------------------------------------------
+    | Tohru Sprites
+    |--------------------------------------------------------------------------
+     */
+
+    public static Sprite tohru_up = new Sprite(DEFAULT_SIZE, 0, 12, SpriteSheet.tiles, 12, 16);
+    public static Sprite tohru_down = new Sprite(DEFAULT_SIZE, 2, 12, SpriteSheet.tiles, 12, 15);
+    public static Sprite tohru_left = new Sprite(DEFAULT_SIZE, 3, 12, SpriteSheet.tiles, 10, 15);
+    public static Sprite tohru_right = new Sprite(DEFAULT_SIZE, 1, 12, SpriteSheet.tiles, 10, 16);
+
+    public static Sprite tohru_up_1 = new Sprite(DEFAULT_SIZE, 0, 13, SpriteSheet.tiles, 12, 16);
+    public static Sprite tohru_up_2 = new Sprite(DEFAULT_SIZE, 0, 14, SpriteSheet.tiles, 12, 15);
+
+    public static Sprite tohru_down_1 = new Sprite(DEFAULT_SIZE, 2, 13, SpriteSheet.tiles, 12, 15);
+    public static Sprite tohru_down_2 = new Sprite(DEFAULT_SIZE, 2, 14, SpriteSheet.tiles, 12, 16);
+
+    public static Sprite tohru_left_1 = new Sprite(DEFAULT_SIZE, 3, 13, SpriteSheet.tiles, 11, 16);
+    public static Sprite tohru_left_2 = new Sprite(DEFAULT_SIZE, 3, 14, SpriteSheet.tiles, 12, 16);
+
+    public static Sprite tohru_right_1 = new Sprite(DEFAULT_SIZE, 1, 13, SpriteSheet.tiles, 11, 16);
+    public static Sprite tohru_right_2 = new Sprite(DEFAULT_SIZE, 1, 14, SpriteSheet.tiles, 12, 16);
+
+    public static Sprite tohru_dead1 = new Sprite(DEFAULT_SIZE, 4, 14, SpriteSheet.tiles, 14, 16);
+    public static Sprite tohru_dead2 = new Sprite(DEFAULT_SIZE, 5, 14, SpriteSheet.tiles, 13, 15);
+    public static Sprite tohru_dead3 = new Sprite(DEFAULT_SIZE, 6, 14, SpriteSheet.tiles, 16, 16);
+
+    /*
+    |--------------------------------------------------------------------------
     | Character
     |--------------------------------------------------------------------------
      */

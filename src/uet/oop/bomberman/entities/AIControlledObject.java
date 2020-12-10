@@ -2,12 +2,12 @@ package uet.oop.bomberman.entities;
 
 import javafx.scene.image.Image;
 import uet.oop.bomberman.ai.AIComponent;
-import uet.oop.bomberman.scenes.GameScene;
+import uet.oop.bomberman.scenes.MainGameScene;
 
 public abstract class AIControlledObject extends MovableObject {
     protected AIComponent objectsAI;
 
-    public AIControlledObject(GameScene scene, double x, double y, Image img) {
+    public AIControlledObject(MainGameScene scene, double x, double y, Image img) {
         super(scene, x, y, img);
     }
 
