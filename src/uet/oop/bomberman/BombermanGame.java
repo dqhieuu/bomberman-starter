@@ -3,10 +3,12 @@ package uet.oop.bomberman;
 import com.sun.javafx.perf.PerformanceTracker;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import uet.oop.bomberman.graphics.Sprite;
@@ -57,8 +59,6 @@ public class BombermanGame extends Application {
 
     @Override
     public void start(Stage stage) {
-        // Reset diem cao
-//        prefs.putInt("highScore", 0);
 
         // Cap nhat bien toan cuc
         primaryStage = stage;
@@ -67,20 +67,34 @@ public class BombermanGame extends Application {
         canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         gc = canvas.getGraphicsContext2D();
 
-        // Set font mac dinh
+        // Set font mặc định
         gc.setFont(pixelFont);
 
-        // Tao root container
-        Group root = new Group();
+        // Tạo root container
+        Pane root = new Pane();
         root.getChildren().add(canvas);
 
+        // Tự động resize nếu thay đổi kích thước
+        ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
+            double resizeScale = Math.min(root.getWidth() / CANVAS_WIDTH, root.getHeight() / CANVAS_HEIGHT);
+            if (resizeScale <= 0) resizeScale = 1;
+
+            canvas.setTranslateX((root.getWidth() - (double) CANVAS_WIDTH) / 2);
+            canvas.setTranslateY((root.getHeight() - (double) CANVAS_HEIGHT) / 2);
+            canvas.setScaleX(resizeScale);
+            canvas.setScaleY(resizeScale);
+        };
+
+        root.heightProperty().addListener(stageSizeListener);
+        root.widthProperty().addListener(stageSizeListener);
+
+
         // Tao scene
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, Color.BLACK);
 
         // Them scene vao stage
         stage.setScene(scene);
         stage.setTitle("Bomberman");
-        stage.setResizable(false);
 
         // Load game scene mac dinh
         currentGameScene = new MainMenuScene();

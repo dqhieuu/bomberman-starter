@@ -54,6 +54,7 @@ public class Bomber extends UserControlledObject {
                             Sprite.tohru_left.getFxImage(),
                             Sprite.tohru_left_1.getFxImage(),
                             Sprite.tohru_left_2.getFxImage(),
+                            Sprite.tohru_left_1.getFxImage(),
                     });
             spriteLists.put(
                     Direction.EAST.toString(),
@@ -61,6 +62,7 @@ public class Bomber extends UserControlledObject {
                             Sprite.tohru_right.getFxImage(),
                             Sprite.tohru_right_1.getFxImage(),
                             Sprite.tohru_right_2.getFxImage(),
+                            Sprite.tohru_right_1.getFxImage(),
                     });
             spriteLists.put(
                     Direction.NORTH.toString(),
@@ -68,6 +70,7 @@ public class Bomber extends UserControlledObject {
                             Sprite.tohru_up.getFxImage(),
                             Sprite.tohru_up_1.getFxImage(),
                             Sprite.tohru_up_2.getFxImage(),
+                            Sprite.tohru_up_1.getFxImage(),
                     });
             spriteLists.put(
                     Direction.SOUTH.toString(),
@@ -75,6 +78,7 @@ public class Bomber extends UserControlledObject {
                             Sprite.tohru_down.getFxImage(),
                             Sprite.tohru_down_1.getFxImage(),
                             Sprite.tohru_down_2.getFxImage(),
+                            Sprite.tohru_down_1.getFxImage(),
                     });
             spriteLists.put(
                     "dead",

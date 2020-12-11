@@ -5,6 +5,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import uet.oop.bomberman.BombermanGame;
@@ -24,9 +25,9 @@ public class MainMenuScene extends GameScene {
     private boolean keyPressed = false;
 
     public MainMenuScene() {
-        menuText = new Text(this, 2, 12, false);
+        menuText = new Text(this, 2.5, 12, false);
         highScore = new Text(this, 6, 2, false);
-        menuText.setText("Press any key to start");
+        menuText.setText("Press Enter to start");
         highScore.setText(String.format("High score: %d", BombermanGame.getHighScore()));
         Sprite.loadMenuScreen();
         int i = 0;
@@ -52,8 +53,15 @@ public class MainMenuScene extends GameScene {
     public void keyEvent(Scene currentScene) {
         currentScene.setOnKeyPressed(event -> {
             if (event != null && !keyPressed) {
-                keyPressed = true;
-                BombermanGame.setCurrentGameScene(new IntermissionScene(IntermissionScene.IntermissionType.FIRST_LEVEL));
+                KeyCode key = event.getCode();
+                if (key == KeyCode.F11 || key == KeyCode.ESCAPE) {
+                    if (key == KeyCode.F11) {
+                        BombermanGame.primaryStage.setFullScreen(!BombermanGame.primaryStage.isFullScreen());
+                    }
+                } else if (key == KeyCode.SPACE || key == KeyCode.ENTER || key == KeyCode.SHIFT || key == KeyCode.Z) {
+                    keyPressed = true;
+                    BombermanGame.setCurrentGameScene(new IntermissionScene(IntermissionScene.IntermissionType.FIRST_LEVEL));
+                }
             }
         });
     }
