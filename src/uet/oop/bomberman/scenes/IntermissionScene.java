@@ -86,7 +86,7 @@ public class IntermissionScene extends GameScene {
             Animation countdown =
                     new Timeline(
                             new KeyFrame(
-                                    Duration.seconds(6),
+                                    Duration.seconds(8),
                                     e ->
                                             BombermanGame.setCurrentGameScene(
                                                     new MainMenuScene())));

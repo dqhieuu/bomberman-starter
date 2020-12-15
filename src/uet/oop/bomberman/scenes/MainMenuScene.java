@@ -13,6 +13,7 @@ import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.PlainImage;
 import uet.oop.bomberman.entities.Text;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.utils.GameMediaPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ public class MainMenuScene extends GameScene {
         blinkingWords.setCycleCount(Timeline.INDEFINITE);
         blinkingWords.play();
         keyEvent(BombermanGame.primaryStage.getScene());
+        GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.MAIN_MENU, false);
     }
 
     public void keyEvent(Scene currentScene) {

@@ -5,6 +5,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class GameMediaPlayer {
+    public static final String MAIN_MENU = "/background_music/main_menu.mp3";
     public static final String STAGE_START = "/background_music/stage_start.mp3";
     public static final String STAGE_THEME = "/background_music/stage_theme.mp3";
     public static final String STAGE_COMPLETE = "/background_music/stage_complete.mp3";
