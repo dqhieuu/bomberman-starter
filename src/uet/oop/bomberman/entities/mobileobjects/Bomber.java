@@ -109,6 +109,10 @@ public class Bomber extends UserControlledObject {
     }
 
     public void plantBomb() {
+        if (isDestroyed() || isDead) {
+            return;
+        }
+
         int bombX = (int) Math.round(gridX);
         int bombY = (int) Math.round(gridY);
         Entity replaceObject = ((MainGameScene) sceneContext).getStillObjectAt(bombX, bombY);
@@ -292,7 +296,7 @@ public class Bomber extends UserControlledObject {
 
     @Override
     public void destroy() {
-        if(!isDead) {
+        if (!isDead) {
             GameMediaPlayer.playBackgroundMusic(GameMediaPlayer.LIFE_LOST, false);
             isDead = true;
             spriteIndex = 0;
